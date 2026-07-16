@@ -1,0 +1,3862 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="description" content="DarkStore AI Pro - Analisador inteligente de entregas com IA avançada">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>DarkStore AI Pro - Analisador Inteligente de Entregas</title>
+<style>
+/* ==================== RESET & BASE ==================== */
+*, *::before, *::after { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+  -webkit-tap-highlight-color: transparent; 
+}
+
+html { 
+  font-size: 16px; 
+  -webkit-text-size-adjust: 100%; 
+}
+
+body { 
+  font-family: var(--font-sans); 
+  background: var(--bg); 
+  color: var(--text-primary); 
+  min-height: 100vh; 
+  line-height: 1.5; 
+  overflow-x: hidden;
+  transition: background 0.3s, color 0.3s; 
+}
+
+/* ==================== CSS VARIABLES ==================== */
+:root {
+  --bg: #0a0a0c; 
+  --surface: #141418; 
+  --surface-raised: #1c1c22; 
+  --surface-muted: #25252e;
+  --border: #2d2d38; 
+  --text-primary: #f0f0f5; 
+  --text-secondary: #a0a0b0; 
+  --text-tertiary: #707080; 
+  --text-quaternary: #505060;
+  --accent: #5b8def; 
+  --positive: #34d399; 
+  --danger: #f87171; 
+  --warning: #fbbf24; 
+  --info: #60a5fa;
+  --chart-1: #5b8def; 
+  --chart-2: #f87171; 
+  --chart-3: #34d399; 
+  --chart-4: #a78bfa; 
+  --chart-5: #94a3b8; 
+  --chart-6: #fbbf24;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SF Mono", "Fira Code", "JetBrains Mono", Consolas, monospace;
+  --radius-sm: 6px; 
+  --radius-md: 10px; 
+  --radius-lg: 12px; 
+  --radius-xl: 16px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.5); 
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  --glow-accent: 0 0 20px rgba(91,141,239,0.3); 
+  --glow-positive: 0 0 20px rgba(52,211,153,0.3);
+  --glow-danger: 0 0 20px rgba(248,113,113,0.3); 
+  --glow-warning: 0 0 20px rgba(251,191,36,0.3);
+}
+
+body.light-mode {
+  --bg: #f5f5f7; 
+  --surface: #ffffff; 
+  --surface-raised: #f0f0f5; 
+  --surface-muted: #e8e8ed;
+  --border: #d1d1d6; 
+  --text-primary: #1c1c1e; 
+  --text-secondary: #48484a; 
+  --text-tertiary: #8e8e93; 
+  --text-quaternary: #aeaeb2;
+  --shadow: 0 8px 32px rgba(0,0,0,0.12); 
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+  --glow-accent: 0 0 20px rgba(91,141,239,0.15); 
+  --glow-positive: 0 0 20px rgba(52,211,153,0.15);
+  --glow-danger: 0 0 20px rgba(248,113,113,0.15); 
+  --glow-warning: 0 0 20px rgba(251,191,36,0.15);
+}
+
+/* ==================== LAYOUT ==================== */
+.container { 
+  max-width: 800px; 
+  margin: 0 auto; 
+  padding: 16px; 
+  width: 100%;
+}
+
+/* ==================== HEADER ==================== */
+.header { 
+  text-align: center; 
+  padding: 24px 16px 16px; 
+  border-bottom: 1px solid var(--border); 
+  margin-bottom: 16px; 
+  position: relative; 
+}
+
+.header h1 { 
+  font-size: clamp(22px, 5vw, 28px); 
+  font-weight: 700; 
+  letter-spacing: -0.5px; 
+  background: linear-gradient(135deg, var(--accent), var(--positive)); 
+  -webkit-background-clip: text; 
+  -webkit-text-fill-color: transparent; 
+  background-clip: text;
+  word-break: break-word;
+}
+
+.header p { 
+  color: var(--text-secondary); 
+  font-size: 14px; 
+  margin-top: 6px; 
+  padding: 0 8px;
+}
+
+.header-actions { 
+  position: absolute; 
+  right: 0; 
+  top: 16px; 
+  display: flex; 
+  gap: 8px; 
+}
+
+.header-btn { 
+  width: 36px; 
+  height: 36px; 
+  border-radius: var(--radius-md); 
+  border: 1px solid var(--border); 
+  background: var(--surface-raised); 
+  color: var(--text-secondary); 
+  font-size: 16px; 
+  cursor: pointer; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  transition: all 0.2s; 
+  flex-shrink: 0;
+}
+
+.header-btn:hover { 
+  background: var(--surface-muted); 
+  color: var(--text-primary); 
+  transform: scale(1.05); 
+}
+
+/* ==================== TABS ==================== */
+.tabs { 
+  display: flex; 
+  gap: 4px; 
+  margin-bottom: 16px; 
+  background: var(--surface); 
+  padding: 4px; 
+  border-radius: var(--radius-lg); 
+  border: 1px solid var(--border); 
+  overflow-x: auto; 
+  -webkit-overflow-scrolling: touch; 
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar { 
+  display: none; 
+}
+
+.tab-btn { 
+  flex: 1; 
+  min-width: 0;
+  padding: 10px 6px; 
+  border: none; 
+  background: transparent; 
+  color: var(--text-tertiary); 
+  font-size: 11px; 
+  font-weight: 500; 
+  cursor: pointer; 
+  border-radius: var(--radius-md); 
+  transition: all 0.2s; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 4px; 
+  white-space: nowrap; 
+  position: relative;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tab-btn:hover { 
+  color: var(--text-secondary); 
+}
+
+.tab-btn.tab-active { 
+  background: var(--surface-raised); 
+  color: var(--text-primary); 
+  box-shadow: var(--shadow-sm); 
+}
+
+.tab-icon { 
+  font-size: 14px; 
+  flex-shrink: 0;
+}
+
+.tab-panel { 
+  display: none; 
+  animation: fadeIn 0.3s ease; 
+}
+
+.tab-panel.tab-active { 
+  display: block; 
+}
+
+@keyframes fadeIn { 
+  from { opacity: 0; transform: translateY(8px); } 
+  to { opacity: 1; transform: translateY(0); } 
+}
+
+/* ==================== CARDS ==================== */
+.card { 
+  background: var(--surface); 
+  border: 1px solid var(--border); 
+  border-radius: var(--radius-lg); 
+  padding: 20px; 
+  margin-bottom: 12px; 
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.card-title { 
+  font-size: 15px; 
+  font-weight: 600; 
+  color: var(--text-primary); 
+  margin-bottom: 16px; 
+  display: flex; 
+  align-items: center; 
+  gap: 8px;
+  word-break: break-word;
+}
+
+.card-subtitle { 
+  font-size: 12px; 
+  color: var(--text-tertiary); 
+  margin-top: -12px; 
+  margin-bottom: 16px;
+  word-break: break-word;
+}
+
+/* ==================== GRIDS ==================== */
+.grid-2 { 
+  display: grid; 
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 12px; 
+}
+
+.grid-3 { 
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 10px; 
+}
+
+.grid-4 { 
+  display: grid; 
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 8px; 
+}
+
+/* ==================== FIELDS ==================== */
+.field { 
+  margin-bottom: 12px; 
+  width: 100%;
+}
+
+.field label { 
+  display: block; 
+  font-size: 11px; 
+  color: var(--text-secondary); 
+  margin-bottom: 6px; 
+  font-weight: 500; 
+  text-transform: uppercase; 
+  letter-spacing: 0.3px;
+  word-break: break-word;
+}
+
+.field input,
+.field select,
+.field textarea { 
+  width: 100%; 
+  padding: 12px 14px; 
+  border: 1px solid var(--border); 
+  border-radius: var(--radius-md); 
+  font-size: 15px; 
+  background: var(--surface-raised); 
+  color: var(--text-primary); 
+  font-family: var(--font-sans); 
+  transition: border-color 0.2s, box-shadow 0.2s; 
+  -webkit-appearance: none;
+  min-width: 0;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus { 
+  outline: none; 
+  border-color: var(--accent); 
+  box-shadow: 0 0 0 3px rgba(91,141,239,0.15); 
+}
+
+.field input[type="range"] { 
+  padding: 0; 
+  height: 6px; 
+  -webkit-appearance: none; 
+  background: var(--border); 
+  border-radius: 3px; 
+  margin-top: 8px; 
+  width: 100%;
+}
+
+.field input[type="range"]::-webkit-slider-thumb { 
+  -webkit-appearance: none; 
+  width: 18px; 
+  height: 18px; 
+  border-radius: 50%; 
+  background: var(--accent); 
+  cursor: pointer; 
+  box-shadow: 0 2px 6px rgba(91,141,239,0.4); 
+}
+
+.range-val { 
+  font-size: 13px; 
+  color: var(--accent); 
+  font-weight: 600; 
+  float: right; 
+}
+
+/* ==================== TOGGLES ==================== */
+.toggle-row { 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  padding: 14px 0; 
+  border-bottom: 1px solid var(--border); 
+  gap: 12px;
+}
+
+.toggle-row:last-child { 
+  border-bottom: none; 
+}
+
+.toggle-label { 
+  font-size: 14px; 
+  color: var(--text-primary); 
+  font-weight: 500;
+  word-break: break-word;
+  flex: 1;
+  min-width: 0;
+}
+
+.toggle-sublabel { 
+  font-size: 12px; 
+  color: var(--text-tertiary); 
+  margin-top: 2px;
+  word-break: break-word;
+}
+
+.switch { 
+  position: relative; 
+  width: 48px; 
+  height: 26px; 
+  flex-shrink: 0; 
+}
+
+.switch input { 
+  opacity: 0; 
+  width: 0; 
+  height: 0; 
+}
+
+.slider { 
+  position: absolute; 
+  cursor: pointer; 
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  bottom: 0; 
+  background: var(--border); 
+  border-radius: 26px; 
+  transition: 0.25s; 
+}
+
+.slider:before { 
+  position: absolute; 
+  content: ""; 
+  height: 20px; 
+  width: 20px; 
+  left: 3px; 
+  bottom: 3px; 
+  background: var(--text-primary); 
+  border-radius: 50%; 
+  transition: 0.25s; 
+}
+
+input:checked + .slider { 
+  background: var(--positive); 
+}
+
+input:checked + .slider:before { 
+  transform: translateX(22px); 
+}
+
+/* ==================== VERDICT ==================== */
+.verdict-card { 
+  border-radius: var(--radius-lg); 
+  padding: 28px 24px; 
+  text-align: center; 
+  margin-bottom: 16px; 
+  transition: all 0.3s; 
+  position: relative; 
+  overflow: hidden;
+  width: 100%;
+}
+
+.verdict-card::before { 
+  content: ""; 
+  position: absolute; 
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  height: 4px; 
+}
+
+.verdict-yes { 
+  background: rgba(52,211,153,0.08); 
+  border: 1px solid rgba(52,211,153,0.3); 
+  box-shadow: var(--glow-positive); 
+}
+
+.verdict-yes::before { 
+  background: var(--positive); 
+}
+
+.verdict-no { 
+  background: rgba(248,113,113,0.08); 
+  border: 1px solid rgba(248,113,113,0.3); 
+  box-shadow: var(--glow-danger); 
+}
+
+.verdict-no::before { 
+  background: var(--danger); 
+}
+
+.verdict-maybe { 
+  background: rgba(251,191,36,0.08); 
+  border: 1px solid rgba(251,191,36,0.3); 
+  box-shadow: var(--glow-warning); 
+}
+
+.verdict-maybe::before { 
+  background: var(--warning); 
+}
+
+.verdict-icon { 
+  font-size: 44px; 
+  margin-bottom: 10px; 
+}
+
+.verdict-text { 
+  font-size: clamp(18px, 4vw, 24px); 
+  font-weight: 700;
+  word-break: break-word;
+}
+
+.verdict-sub { 
+  font-size: 14px; 
+  color: var(--text-secondary); 
+  margin-top: 8px;
+  word-break: break-word;
+  padding: 0 8px;
+}
+
+.score-bar { 
+  height: 10px; 
+  border-radius: 5px; 
+  background: var(--surface-raised); 
+  overflow: hidden; 
+  margin: 16px 0 6px; 
+  width: 100%;
+}
+
+.score-fill { 
+  height: 100%; 
+  border-radius: 5px; 
+  transition: width 0.6s cubic-bezier(0.4,0,0.2,1); 
+}
+
+/* ==================== METRICS ==================== */
+.metric-card { 
+  background: var(--surface-raised); 
+  border: 1px solid var(--border); 
+  border-radius: var(--radius-md); 
+  padding: 16px 8px; 
+  text-align: center; 
+  transition: all 0.2s; 
+  cursor: pointer;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.metric-card:hover { 
+  transform: translateY(-2px); 
+  box-shadow: var(--shadow-sm); 
+}
+
+.metric-value { 
+  font-size: clamp(18px, 4vw, 26px); 
+  font-weight: 700; 
+  color: var(--text-primary); 
+  font-variant-numeric: tabular-nums;
+  word-break: break-word;
+}
+
+.metric-label { 
+  font-size: 10px; 
+  color: var(--text-tertiary); 
+  margin-top: 6px; 
+  text-transform: uppercase; 
+  letter-spacing: 0.5px;
+  word-break: break-word;
+}
+
+.metric-sub { 
+  font-size: 12px; 
+  color: var(--text-tertiary); 
+  margin-top: 4px;
+  word-break: break-word;
+}
+
+.metric-highlight { 
+  border-color: var(--positive); 
+  background: rgba(52,211,153,0.05); 
+}
+
+.metric-highlight .metric-value { 
+  color: var(--positive); 
+}
+
+.metric-danger { 
+  border-color: var(--danger); 
+  background: rgba(248,113,113,0.05); 
+}
+
+.metric-danger .metric-value { 
+  color: var(--danger); 
+}
+
+.metric-warning { 
+  border-color: var(--warning); 
+  background: rgba(251,191,36,0.05); 
+}
+
+.metric-warning .metric-value { 
+  color: var(--warning); 
+}
+
+/* ==================== DETAILS ==================== */
+.detail-row { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 10px 0; 
+  font-size: 14px; 
+  border-bottom: 1px dashed var(--border); 
+  gap: 12px;
+}
+
+.detail-row:last-child { 
+  border-bottom: none; 
+}
+
+.detail-val { 
+  font-weight: 600; 
+  font-variant-numeric: tabular-nums; 
+  color: var(--text-primary);
+  text-align: right;
+  flex-shrink: 0;
+  min-width: 0;
+  word-break: break-word;
+}
+
+/* ==================== BADGES ==================== */
+.badge { 
+  display: inline-block; 
+  padding: 4px 10px; 
+  border-radius: var(--radius-sm); 
+  font-size: 10px; 
+  font-weight: 600; 
+  text-transform: uppercase; 
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.badge-pos { 
+  background: rgba(52,211,153,0.15); 
+  color: var(--positive); 
+}
+
+.badge-neg { 
+  background: rgba(248,113,113,0.15); 
+  color: var(--danger); 
+}
+
+.badge-warn { 
+  background: rgba(251,191,36,0.15); 
+  color: var(--warning); 
+}
+
+.badge-info { 
+  background: rgba(96,165,250,0.15); 
+  color: var(--info); 
+}
+
+/* ==================== BUTTONS ==================== */
+.btn { 
+  padding: 14px 16px; 
+  border-radius: var(--radius-md); 
+  border: none; 
+  background: var(--accent); 
+  color: #fff; 
+  font-size: 14px; 
+  font-weight: 600; 
+  cursor: pointer; 
+  width: 100%; 
+  transition: all 0.2s; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 8px; 
+  -webkit-appearance: none;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn:hover { 
+  background: #4a7de0; 
+  transform: translateY(-1px); 
+  box-shadow: var(--glow-accent); 
+}
+
+.btn:active { 
+  transform: translateY(0); 
+}
+
+.btn-secondary { 
+  background: var(--surface-raised); 
+  color: var(--text-primary); 
+  border: 1px solid var(--border); 
+}
+
+.btn-secondary:hover { 
+  background: var(--surface-muted); 
+  box-shadow: none; 
+}
+
+.btn-success { 
+  background: var(--positive); 
+  color: #0f0f11; 
+}
+
+.btn-success:hover { 
+  background: #2ec78a; 
+  box-shadow: var(--glow-positive); 
+}
+
+.btn-danger { 
+  background: var(--danger); 
+}
+
+.btn-danger:hover { 
+  background: #e55; 
+  box-shadow: var(--glow-danger); 
+}
+
+.btn-warning { 
+  background: var(--warning); 
+  color: #0f0f11; 
+}
+
+.btn-warning:hover { 
+  background: #e5a820; 
+  box-shadow: var(--glow-warning); 
+}
+
+.btn-group { 
+  display: flex; 
+  gap: 8px; 
+}
+
+.btn-group .btn { 
+  flex: 1; 
+  min-width: 0;
+}
+
+.btn-small { 
+  padding: 8px 14px; 
+  font-size: 12px; 
+  width: auto; 
+}
+
+/* ==================== FACTORS ==================== */
+.factor-item { 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+  padding: 8px 0; 
+  font-size: 13px; 
+  color: var(--text-secondary);
+  word-break: break-word;
+}
+
+.factor-dot { 
+  width: 8px; 
+  height: 8px; 
+  border-radius: 50%; 
+  flex-shrink: 0; 
+}
+
+/* ==================== CHARTS ==================== */
+.chart-bar { 
+  display: flex; 
+  align-items: flex-end; 
+  gap: 8px; 
+  height: 160px; 
+  padding: 10px 4px 30px; 
+  width: 100%;
+}
+
+.bar { 
+  flex: 1; 
+  border-radius: 4px 4px 0 0; 
+  min-height: 4px; 
+  transition: height 0.5s ease; 
+  position: relative; 
+  cursor: pointer;
+  min-width: 0;
+}
+
+.bar:hover { 
+  filter: brightness(1.2); 
+}
+
+.bar-label { 
+  position: absolute; 
+  bottom: -24px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  font-size: 10px; 
+  color: var(--text-tertiary); 
+  white-space: nowrap; 
+}
+
+.bar-val { 
+  position: absolute; 
+  top: -24px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  font-size: 10px; 
+  font-weight: 600; 
+  color: var(--text-primary); 
+  white-space: nowrap; 
+}
+
+/* ==================== GOAL RING ==================== */
+.goal-ring-container { 
+  display: flex; 
+  align-items: center; 
+  gap: 20px; 
+  padding: 16px 0; 
+}
+
+.goal-ring { 
+  position: relative; 
+  width: 120px; 
+  height: 120px; 
+  flex-shrink: 0; 
+}
+
+.goal-ring svg { 
+  transform: rotate(-90deg); 
+  width: 100%; 
+  height: 100%; 
+}
+
+.goal-ring-bg { 
+  fill: none; 
+  stroke: var(--border); 
+  stroke-width: 8; 
+}
+
+.goal-ring-fill { 
+  fill: none; 
+  stroke: var(--positive); 
+  stroke-width: 8; 
+  stroke-linecap: round; 
+  transition: stroke-dashoffset 0.8s cubic-bezier(0.4,0,0.2,1); 
+}
+
+.goal-ring-text { 
+  position: absolute; 
+  top: 50%; 
+  left: 50%; 
+  transform: translate(-50%,-50%); 
+  text-align: center; 
+}
+
+.goal-ring-pct { 
+  font-size: 24px; 
+  font-weight: 700; 
+  color: var(--positive); 
+}
+
+.goal-ring-label { 
+  font-size: 11px; 
+  color: var(--text-tertiary); 
+}
+
+.goal-info { 
+  flex: 1;
+  min-width: 0;
+}
+
+.goal-info-row { 
+  display: flex; 
+  justify-content: space-between; 
+  padding: 8px 0; 
+  font-size: 14px; 
+  border-bottom: 1px dashed var(--border); 
+  gap: 8px;
+}
+
+.goal-info-row:last-child { 
+  border-bottom: none; 
+}
+
+/* ==================== HISTORY ==================== */
+.history-table { 
+  width: 100%; 
+  border-collapse: collapse; 
+  font-size: 13px;
+  table-layout: fixed;
+}
+
+.history-table th { 
+  text-align: left; 
+  padding: 12px 6px; 
+  color: var(--text-tertiary); 
+  font-weight: 600; 
+  font-size: 10px; 
+  text-transform: uppercase; 
+  letter-spacing: 0.5px; 
+  border-bottom: 1px solid var(--border);
+  word-break: break-word;
+}
+
+.history-table td { 
+  padding: 12px 6px; 
+  border-bottom: 1px solid var(--border); 
+  color: var(--text-secondary);
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history-table tr:hover td { 
+  background: var(--surface-raised); 
+}
+
+.history-table .col-valor { 
+  color: var(--positive); 
+  font-weight: 600; 
+}
+
+.history-table .col-hora { 
+  font-family: var(--font-mono); 
+  font-size: 11px; 
+}
+
+.history-empty { 
+  text-align: center; 
+  padding: 40px 20px; 
+  color: var(--text-tertiary); 
+}
+
+.history-empty-icon { 
+  font-size: 40px; 
+  margin-bottom: 8px; 
+  opacity: 0.5; 
+}
+
+/* ==================== TOAST ==================== */
+.toast { 
+  position: fixed; 
+  bottom: 24px; 
+  left: 50%; 
+  transform: translateX(-50%) translateY(100px); 
+  background: var(--surface-raised); 
+  color: var(--text-primary); 
+  padding: 14px 24px; 
+  border-radius: var(--radius-lg); 
+  border: 1px solid var(--border); 
+  box-shadow: var(--shadow); 
+  font-size: 14px; 
+  font-weight: 500; 
+  z-index: 1000; 
+  opacity: 0; 
+  transition: all 0.3s ease; 
+  display: flex; 
+  align-items: center; 
+  gap: 8px;
+  max-width: 90vw;
+  text-align: center;
+  word-break: break-word;
+}
+
+.toast.show { 
+  transform: translateX(-50%) translateY(0); 
+  opacity: 1; 
+}
+
+.toast-success { 
+  border-color: var(--positive); 
+}
+
+.toast-error { 
+  border-color: var(--danger); 
+}
+
+.toast-warning { 
+  border-color: var(--warning); 
+}
+
+/* ==================== SCHEDULE ==================== */
+.schedule-header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 12px 16px; 
+  background: var(--surface-raised); 
+  border-radius: var(--radius-md); 
+  margin-bottom: 8px; 
+  border: 1px solid var(--border); 
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.schedule-header h3 { 
+  font-size: 14px; 
+  font-weight: 600; 
+  color: var(--text-primary); 
+}
+
+.schedule-legend { 
+  display: flex; 
+  gap: 12px; 
+  font-size: 11px;
+  flex-wrap: wrap;
+}
+
+.schedule-legend span { 
+  display: flex; 
+  align-items: center; 
+  gap: 4px; 
+}
+
+.schedule-legend-dot { 
+  width: 8px; 
+  height: 8px; 
+  border-radius: 50%; 
+  display: inline-block; 
+  flex-shrink: 0;
+}
+
+.schedule-timeline { 
+  position: relative; 
+  padding-left: 60px; 
+}
+
+.schedule-timeline::before { 
+  content: ""; 
+  position: absolute; 
+  left: 24px; 
+  top: 0; 
+  bottom: 0; 
+  width: 2px; 
+  background: var(--border); 
+}
+
+.schedule-item { 
+  position: relative; 
+  padding: 12px 0; 
+  border-bottom: 1px solid var(--border); 
+}
+
+.schedule-item:last-child { 
+  border-bottom: none; 
+}
+
+.schedule-item-dot { 
+  position: absolute; 
+  left: -44px; 
+  top: 16px; 
+  width: 14px; 
+  height: 14px; 
+  border-radius: 50%; 
+  border: 2px solid var(--bg); 
+  z-index: 2; 
+}
+
+.schedule-item-dot.work { 
+  background: var(--accent); 
+}
+
+.schedule-item-dot.idle { 
+  background: var(--warning); 
+}
+
+.schedule-item-dot.break { 
+  background: var(--chart-5); 
+}
+
+.schedule-time { 
+  font-family: var(--font-mono); 
+  font-size: 12px; 
+  color: var(--accent); 
+  font-weight: 600; 
+  position: absolute; 
+  left: -60px; 
+  top: 14px; 
+  width: 50px; 
+  text-align: right; 
+}
+
+.schedule-content { 
+  padding-left: 8px;
+  min-width: 0;
+}
+
+.schedule-badge { 
+  font-size: 10px; 
+  padding: 3px 8px; 
+  border-radius: var(--radius-sm); 
+  font-weight: 600; 
+  display: inline-block; 
+  margin-bottom: 4px; 
+}
+
+.schedule-badge.work { 
+  background: rgba(91,141,239,0.15); 
+  color: var(--accent); 
+}
+
+.schedule-badge.idle { 
+  background: rgba(251,191,36,0.15); 
+  color: var(--warning); 
+}
+
+.schedule-badge.break { 
+  background: rgba(148,163,184,0.15); 
+  color: var(--chart-5); 
+}
+
+.schedule-desc { 
+  font-size: 13px; 
+  color: var(--text-secondary);
+  word-break: break-word;
+}
+
+.schedule-duration { 
+  font-size: 11px; 
+  color: var(--text-tertiary); 
+  margin-top: 2px; 
+}
+
+/* ==================== TIME BAR ==================== */
+.time-bar-container { 
+  margin-top: 16px; 
+}
+
+.time-bar-labels { 
+  display: flex; 
+  justify-content: space-between; 
+  margin-bottom: 8px; 
+  font-size: 12px; 
+  font-weight: 500;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.time-bar { 
+  display: flex; 
+  height: 36px; 
+  border-radius: var(--radius-md); 
+  overflow: hidden; 
+  background: var(--surface-raised); 
+  border: 1px solid var(--border); 
+}
+
+.time-bar-segment { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-size: 11px; 
+  font-weight: 600; 
+  transition: width 0.5s ease; 
+  white-space: nowrap; 
+  overflow: hidden;
+  min-width: 0;
+}
+
+.time-bar-segment.work { 
+  background: var(--accent); 
+  color: #fff; 
+}
+
+.time-bar-segment.idle { 
+  background: var(--warning); 
+  color: #0f0f11; 
+}
+
+.time-bar-segment.break { 
+  background: var(--chart-5); 
+  color: #fff; 
+}
+
+.time-stats { 
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 10px; 
+  margin-top: 16px; 
+}
+
+.time-stat { 
+  text-align: center; 
+  padding: 12px 4px; 
+  background: var(--surface-raised); 
+  border-radius: var(--radius-md); 
+  border: 1px solid var(--border);
+  min-width: 0;
+}
+
+.time-stat-value { 
+  font-size: clamp(14px, 3vw, 20px); 
+  font-weight: 700;
+  word-break: break-word;
+}
+
+.time-stat-label { 
+  font-size: 10px; 
+  color: var(--text-tertiary); 
+  margin-top: 4px; 
+  text-transform: uppercase;
+  word-break: break-word;
+}
+
+/* ==================== AI INSIGHT ==================== */
+.ai-insight { 
+  background: linear-gradient(135deg, rgba(91,141,239,0.08), rgba(167,139,250,0.08)); 
+  border: 1px solid rgba(91,141,239,0.3); 
+  border-radius: var(--radius-lg); 
+  padding: 16px; 
+  margin-bottom: 12px; 
+  position: relative; 
+  overflow: hidden;
+  width: 100%;
+}
+
+.ai-insight::before { 
+  content: ""; 
+  position: absolute; 
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  height: 3px; 
+  background: linear-gradient(90deg, var(--accent), var(--chart-4)); 
+}
+
+.ai-insight-title { 
+  font-size: 14px; 
+  font-weight: 600; 
+  color: var(--accent); 
+  margin-bottom: 8px; 
+  display: flex; 
+  align-items: center; 
+  gap: 6px; 
+}
+
+.ai-insight-text { 
+  font-size: 13px; 
+  color: var(--text-secondary); 
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.ai-insight-text strong { 
+  color: var(--text-primary); 
+}
+
+/* ==================== COMPARISON ==================== */
+.comparison-container { 
+  display: flex; 
+  gap: 12px; 
+  margin-top: 12px; 
+}
+
+.comparison-card { 
+  flex: 1; 
+  background: var(--surface-raised); 
+  border: 1px solid var(--border); 
+  border-radius: var(--radius-md); 
+  padding: 16px 8px; 
+  text-align: center; 
+  transition: all 0.2s;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.comparison-card:hover { 
+  border-color: var(--accent); 
+}
+
+.comparison-card.winner { 
+  border-color: var(--positive); 
+  background: rgba(52,211,153,0.05); 
+  box-shadow: var(--glow-positive); 
+}
+
+.comparison-card.loser { 
+  border-color: var(--danger); 
+  background: rgba(248,113,113,0.05); 
+}
+
+.comparison-title { 
+  font-size: 12px; 
+  font-weight: 600; 
+  color: var(--text-primary); 
+  margin-bottom: 8px;
+  word-break: break-word;
+}
+
+.comparison-value { 
+  font-size: clamp(16px, 4vw, 22px); 
+  font-weight: 700;
+  word-break: break-word;
+}
+
+.comparison-sub { 
+  font-size: 11px; 
+  color: var(--text-tertiary); 
+  margin-top: 4px;
+  word-break: break-word;
+}
+
+.comparison-vs { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-size: 16px; 
+  font-weight: 700; 
+  color: var(--text-tertiary); 
+  flex-shrink: 0;
+}
+
+/* ==================== SIMULATOR ==================== */
+.simulator-row { 
+  display: flex; 
+  gap: 8px; 
+  align-items: center; 
+  padding: 8px 0; 
+  border-bottom: 1px dashed var(--border); 
+}
+
+.simulator-row:last-child { 
+  border-bottom: none; 
+}
+
+.simulator-label { 
+  flex: 1; 
+  font-size: 13px; 
+  color: var(--text-secondary);
+  word-break: break-word;
+  min-width: 0;
+}
+
+.simulator-input { 
+  width: 70px; 
+  flex-shrink: 0;
+}
+
+.simulator-result { 
+  font-size: 13px; 
+  font-weight: 600; 
+  min-width: 80px; 
+  text-align: right;
+  flex-shrink: 0;
+  word-break: break-word;
+}
+
+/* ==================== QUICK ACTIONS ==================== */
+.quick-actions { 
+  display: flex; 
+  gap: 8px; 
+  overflow-x: auto; 
+  padding: 4px 0; 
+  margin-bottom: 12px; 
+  -webkit-overflow-scrolling: touch; 
+  scrollbar-width: none;
+}
+
+.quick-actions::-webkit-scrollbar { 
+  display: none; 
+}
+
+.quick-action-btn { 
+  flex-shrink: 0; 
+  padding: 8px 14px; 
+  border-radius: var(--radius-lg); 
+  border: 1px solid var(--border); 
+  background: var(--surface-raised); 
+  color: var(--text-secondary); 
+  font-size: 12px; 
+  font-weight: 500; 
+  cursor: pointer; 
+  display: flex; 
+  align-items: center; 
+  gap: 4px; 
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.quick-action-btn:hover { 
+  background: var(--surface-muted); 
+  color: var(--text-primary); 
+  border-color: var(--accent); 
+}
+
+.quick-action-btn.active { 
+  background: rgba(91,141,239,0.15); 
+  color: var(--accent); 
+  border-color: var(--accent); 
+}
+
+/* ==================== HEATMAP ==================== */
+.heatmap-container { 
+  display: grid; 
+  grid-template-columns: repeat(7, 1fr); 
+  gap: 3px; 
+  margin-top: 12px; 
+}
+
+.heatmap-cell { 
+  aspect-ratio: 1; 
+  border-radius: var(--radius-sm); 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-size: 9px; 
+  font-weight: 600; 
+  cursor: pointer; 
+  transition: all 0.2s; 
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.heatmap-cell:hover { 
+  transform: scale(1.1); 
+  z-index: 2; 
+}
+
+.heatmap-cell .tooltip { 
+  position: absolute; 
+  bottom: 100%; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  background: var(--surface-raised); 
+  border: 1px solid var(--border); 
+  padding: 6px 10px; 
+  border-radius: var(--radius-sm); 
+  font-size: 11px; 
+  white-space: nowrap; 
+  opacity: 0; 
+  pointer-events: none; 
+  transition: opacity 0.2s; 
+  z-index: 10; 
+}
+
+.heatmap-cell:hover .tooltip { 
+  opacity: 1; 
+}
+
+.heatmap-labels { 
+  display: grid; 
+  grid-template-columns: repeat(7, 1fr); 
+  gap: 3px; 
+  margin-bottom: 4px; 
+}
+
+.heatmap-labels span { 
+  text-align: center; 
+  font-size: 9px; 
+  color: var(--text-tertiary); 
+  text-transform: uppercase;
+  word-break: break-word;
+}
+
+/* ==================== TREND CHART ==================== */
+.trend-chart { 
+  height: 200px; 
+  position: relative; 
+  margin: 16px 0; 
+  width: 100%;
+}
+
+.trend-line { 
+  position: absolute; 
+  bottom: 30px; 
+  left: 40px; 
+  right: 10px; 
+  top: 20px; 
+}
+
+.trend-svg { 
+  width: 100%; 
+  height: 100%; 
+}
+
+.trend-axis-x, 
+.trend-axis-y { 
+  position: absolute; 
+  font-size: 9px; 
+  color: var(--text-quaternary); 
+}
+
+.trend-axis-x { 
+  bottom: 0; 
+  left: 40px; 
+  right: 10px; 
+  display: flex; 
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.trend-axis-y { 
+  left: 0; 
+  top: 20px; 
+  bottom: 30px; 
+  width: 35px; 
+  display: flex; 
+  flex-direction: column; 
+  justify-content: space-between; 
+  text-align: right; 
+}
+
+/* ==================== MODAL ==================== */
+.modal-overlay { 
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  bottom: 0; 
+  background: rgba(0,0,0,0.7); 
+  backdrop-filter: blur(4px); 
+  z-index: 2000; 
+  display: none; 
+  align-items: center; 
+  justify-content: center; 
+  padding: 16px; 
+}
+
+.modal-overlay.show { 
+  display: flex; 
+}
+
+.modal { 
+  background: var(--surface); 
+  border: 1px solid var(--border); 
+  border-radius: var(--radius-xl); 
+  max-width: 500px; 
+  width: 100%; 
+  max-height: 90vh; 
+  overflow-y: auto; 
+  animation: modalIn 0.3s ease;
+}
+
+@keyframes modalIn { 
+  from { opacity: 0; transform: scale(0.9); } 
+  to { opacity: 1; transform: scale(1); } 
+}
+
+.modal-header { 
+  padding: 20px 20px 0; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  gap: 12px;
+}
+
+.modal-title { 
+  font-size: 18px; 
+  font-weight: 700;
+  word-break: break-word;
+  flex: 1;
+}
+
+.modal-close { 
+  width: 32px; 
+  height: 32px; 
+  border-radius: var(--radius-md); 
+  border: none; 
+  background: var(--surface-raised); 
+  color: var(--text-secondary); 
+  font-size: 18px; 
+  cursor: pointer; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  flex-shrink: 0;
+}
+
+.modal-close:hover { 
+  background: var(--surface-muted); 
+  color: var(--text-primary); 
+}
+
+.modal-body { 
+  padding: 20px; 
+}
+
+.modal-footer { 
+  padding: 0 20px 20px; 
+  display: flex; 
+  gap: 8px; 
+}
+
+/* ==================== SCROLLBAR ==================== */
+::-webkit-scrollbar { 
+  width: 6px; 
+}
+
+::-webkit-scrollbar-track { 
+  background: var(--bg); 
+}
+
+::-webkit-scrollbar-thumb { 
+  background: var(--border); 
+  border-radius: 3px; 
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes pulse { 
+  0%, 100% { opacity: 1; } 
+  50% { opacity: 0.5; } 
+}
+
+.pulse { 
+  animation: pulse 2s infinite; 
+}
+
+@keyframes slideIn { 
+  from { opacity: 0; transform: translateX(-20px); } 
+  to { opacity: 1; transform: translateX(0); } 
+}
+
+.slide-in { 
+  animation: slideIn 0.3s ease; 
+}
+
+/* ==================== NAVBAR ==================== */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  margin: -16px -16px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-logo {
+  font-size: 22px;
+}
+
+.navbar-title {
+  font-size: 17px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--positive));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.navbar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.navbar-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.navbar-btn:hover {
+  background: var(--surface-muted);
+  color: var(--text-primary);
+  transform: scale(1.05);
+}
+
+/* ==================== CURRENT SECTION INDICATOR ==================== */
+.current-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.current-section-icon {
+  font-size: 16px;
+}
+
+/* ==================== MENU OVERLAY & DRAWER ==================== */
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1500;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.menu-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.menu-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 300px;
+  max-width: 85vw;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  z-index: 1600;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow);
+}
+
+.menu-drawer.show {
+  transform: translateX(0);
+}
+
+.menu-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+
+.menu-drawer-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  word-break: break-word;
+  flex: 1;
+}
+
+.menu-drawer-close {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.menu-drawer-close:hover {
+  background: var(--surface-muted);
+  color: var(--text-primary);
+}
+
+.menu-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.menu-drawer-footer {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  position: relative;
+}
+
+.menu-item:hover {
+  background: var(--surface-raised);
+  color: var(--text-primary);
+}
+
+.menu-item.active {
+  background: rgba(91,141,239,0.15);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.menu-item-icon {
+  font-size: 20px;
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.menu-item-text {
+  flex: 1;
+  word-break: break-word;
+}
+
+.menu-item-badge {
+  background: var(--danger);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  min-width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 600px) {
+  .container { 
+    padding: 12px; 
+  }
+
+  .navbar {
+    margin: -12px -12px 12px;
+    padding: 10px 12px;
+  }
+
+  .navbar-title {
+    font-size: 15px;
+  }
+
+  .navbar-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  .current-section {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  .menu-drawer {
+    width: 260px;
+  }
+
+  .menu-item {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+
+  .menu-item-icon {
+    font-size: 18px;
+    width: 24px;
+  }
+
+  .tabs { 
+    padding: 3px; 
+    gap: 2px;
+  }
+
+  .tab-btn { 
+    font-size: 10px; 
+    padding: 8px 4px; 
+    min-width: 0;
+    gap: 2px;
+  }
+
+  .tab-icon { 
+    font-size: 12px; 
+  }
+
+  .card { 
+    padding: 16px 12px; 
+  }
+
+  .grid-2, 
+  .grid-3, 
+  .grid-4 { 
+    grid-template-columns: 1fr; 
+    gap: 8px; 
+  }
+
+  .metric-value { 
+    font-size: 20px; 
+  }
+
+  .metric-label { 
+    font-size: 9px; 
+  }
+
+  .goal-ring-container { 
+    flex-direction: column; 
+    text-align: center; 
+    gap: 16px;
+  }
+
+  .goal-info { 
+    width: 100%; 
+  }
+
+  .time-stats { 
+    grid-template-columns: 1fr; 
+    gap: 8px;
+  }
+
+  .schedule-timeline { 
+    padding-left: 50px; 
+  }
+
+  .schedule-time { 
+    left: -50px; 
+    width: 40px; 
+    font-size: 11px; 
+  }
+
+  .schedule-item-dot { 
+    left: -38px; 
+  }
+
+  .comparison-container { 
+    flex-direction: column; 
+    gap: 8px;
+  }
+
+  .comparison-vs { 
+    transform: rotate(90deg); 
+    padding: 4px 0;
+  }
+
+  .comparison-card { 
+    padding: 12px 8px; 
+  }
+
+  .btn-group { 
+    flex-direction: column; 
+    gap: 8px;
+  }
+
+  .btn-group .btn { 
+    width: 100%; 
+  }
+
+  .history-table { 
+    font-size: 11px; 
+  }
+
+  .history-table th,
+  .history-table td { 
+    padding: 8px 4px; 
+  }
+
+  .chart-bar { 
+    height: 120px; 
+    padding-bottom: 24px;
+  }
+
+  .bar-label { 
+    font-size: 9px; 
+    bottom: -20px;
+  }
+
+  .bar-val { 
+    font-size: 9px; 
+    top: -20px;
+  }
+
+  .heatmap-container { 
+    gap: 2px; 
+  }
+
+  .heatmap-cell { 
+    font-size: 8px; 
+  }
+
+  .simulator-row { 
+    flex-wrap: wrap; 
+    gap: 4px;
+  }
+
+  .simulator-label { 
+    width: 100%; 
+    margin-bottom: 4px;
+  }
+
+  .simulator-input,
+  .simulator-result { 
+    flex: 1; 
+  }
+
+  .modal { 
+    max-height: 85vh; 
+  }
+
+  .modal-body { 
+    padding: 16px 12px; 
+  }
+}
+
+@media (max-width: 380px) {
+  .header h1 { 
+    font-size: 20px; 
+  }
+
+  .tab-btn { 
+    font-size: 9px; 
+    padding: 6px 3px; 
+  }
+
+  .tab-icon { 
+    font-size: 11px; 
+  }
+
+  .verdict-text { 
+    font-size: 16px; 
+  }
+
+  .verdict-sub { 
+    font-size: 12px; 
+  }
+
+  .metric-value { 
+    font-size: 18px; 
+  }
+
+  .field input,
+  .field select { 
+    padding: 10px 12px; 
+    font-size: 14px; 
+  }
+
+  .btn { 
+    padding: 12px 14px; 
+    font-size: 13px; 
+  }
+}
+
+/* ==================== LOADING ==================== */
+.loading-skeleton { 
+  background: linear-gradient(90deg, var(--surface-raised) 25%, var(--surface-muted) 50%, var(--surface-raised) 75%); 
+  background-size: 200% 100%; 
+  animation: skeleton 1.5s infinite; 
+  border-radius: var(--radius-sm); 
+}
+
+@keyframes skeleton { 
+  0% { background-position: 200% 0; } 
+  100% { background-position: -200% 0; } 
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- NAVBAR SUPERIOR -->
+<div class="navbar">
+  <div class="navbar-brand">
+    <span class="navbar-logo">&#128640;</span>
+    <span class="navbar-title">DarkStore AI Pro</span>
+  </div>
+  <div class="navbar-actions">
+    <button class="navbar-btn" onclick="toggleTheme()" title="Alternar tema">&#127769;</button>
+    <button class="navbar-btn" onclick="toggleNotifications()" title="Notificações">&#128276;</button>
+    <button class="navbar-btn" onclick="openMenu()" title="Menu" id="menuBtn">&#9776;</button>
+  </div>
+</div>
+
+<!-- INDICADOR DE SEÇÃO ATUAL -->
+<div class="current-section" id="currentSection">
+  <span class="current-section-icon" id="currentIcon">&#129504;</span>
+  <span id="currentText">Analisar</span>
+</div>
+
+<!-- MENU SUSPENSO (DRAWER) -->
+<div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+<div class="menu-drawer" id="menuDrawer">
+  <div class="menu-drawer-header">
+    <span class="menu-drawer-title">&#128640; Menu</span>
+    <button class="menu-drawer-close" onclick="closeMenu()">&times;</button>
+  </div>
+  <div class="menu-drawer-body">
+    <button class="menu-item active" data-tab="analisar" onclick="switchTabMenu(this)">
+      <span class="menu-item-icon">&#129504;</span>
+      <span class="menu-item-text">Analisar Corrida</span>
+    </button>
+    <button class="menu-item" data-tab="comparar" onclick="switchTabMenu(this)">
+      <span class="menu-item-icon">&#128260;</span>
+      <span class="menu-item-text">Comparar Corridas</span>
+    </button>
+    <button class="menu-item" data-tab="projecoes" onclick="switchTabMenu(this)">
+      <span class="menu-item-icon">&#128200;</span>
+      <span class="menu-item-text">Projeções</span>
+    </button>
+    <button class="menu-item" data-tab="meta" onclick="switchTabMenu(this)">
+      <span class="menu-item-icon">&#127919;</span>
+      <span class="menu-item-text">Meta Diária</span>
+    </button>
+    <button class="menu-item" data-tab="jornada" onclick="switchTabMenu(this)">
+      <span class="menu-item-icon">&#128197;</span>
+      <span class="menu-item-text">Jornada</span>
+    </button>
+    <button class="menu-item" data-tab="estatisticas" onclick="switchTabMenu(this)">
+      <span class="menu-item-icon">&#128202;</span>
+      <span class="menu-item-text">Estatísticas</span>
+    </button>
+    <button class="menu-item" data-tab="historico" onclick="switchTabMenu(this)">
+      <span class="menu-item-icon">&#128203;</span>
+      <span class="menu-item-text">Histórico</span>
+      <span class="menu-item-badge" id="menuBadgeHist" style="display:none;">0</span>
+    </button>
+    <div style="border-top: 1px solid var(--border); margin: 8px 0;"></div>
+    <button class="menu-item" onclick="showHelp(); closeMenu();">
+      <span class="menu-item-icon">&#10067;</span>
+      <span class="menu-item-text">Ajuda / Tutorial</span>
+    </button>
+  </div>
+  <div class="menu-drawer-footer">
+    DarkStore AI Pro v2.0
+  </div>
+</div>
+
+<!-- ABA 1: ANALISAR -->
+<div id="panel-analisar" class="tab-panel tab-active">
+
+  <div class="ai-insight" id="aiInsight">
+    <div class="ai-insight-title">&#129302; Insight da IA</div>
+    <div class="ai-insight-text" id="aiInsightText">
+      Preencha os dados da corrida para receber uma análise inteligente com recomendações personalizadas baseadas no seu histórico.
+    </div>
+  </div>
+
+  <div class="verdict-card verdict-yes" id="verdictBox">
+    <div class="verdict-icon" id="verdictIcon">&#9989;</div>
+    <div class="verdict-text" id="verdictText">Vale a pena aceitar!</div>
+    <div class="verdict-sub" id="verdictSub">Score: 78/100 - Boa oportunidade</div>
+    <div class="score-bar"><div class="score-fill" id="scoreFill" style="width:78%;background:var(--positive);"></div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128203; Dados da corrida</div>
+    <div class="quick-actions">
+      <button class="quick-action-btn" onclick="presetCorrida('curta')">&#128640; Curta (R$8-12)</button>
+      <button class="quick-action-btn" onclick="presetCorrida('media')">&#128663; Média (R$12-20)</button>
+      <button class="quick-action-btn" onclick="presetCorrida('longa')">&#128674; Longa (R$20+)</button>
+      <button class="quick-action-btn" onclick="presetCorrida('pico')">&#128293; Pico</button>
+      <button class="quick-action-btn" onclick="presetCorrida('chuva')">&#127783; Chuva</button>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>Valor da corrida (R$)</label><input type="number" id="valor" value="12.50" step="0.50" min="0" oninput="calcular()"></div>
+      <div class="field"><label>Distância ida (km)</label><input type="number" id="distIda" value="3.2" step="0.1" min="0" oninput="calcular()"></div>
+      <div class="field"><label>Distância volta (km)</label><input type="number" id="distVolta" value="3.2" step="0.1" min="0" oninput="calcular()"></div>
+      <div class="field"><label>Tempo estimado (min)</label><input type="number" id="tempoEst" value="18" step="1" min="1" oninput="calcular()"></div>
+    </div>
+    <div class="grid-2" style="margin-top:8px;">
+      <div class="field"><label>Tipo de veículo</label>
+        <select id="tipoVeiculo" onchange="calcular()">
+          <option value="moto">&#127949; Moto</option>
+          <option value="bike">&#128690; Bike</option>
+          <option value="carro">&#128663; Carro</option>
+          <option value="patinete">&#128756; Patinete</option>
+        </select>
+      </div>
+      <div class="field"><label>Plataforma</label>
+        <select id="plataforma" onchange="calcular()">
+          <option value="ifood">iFood</option>
+          <option value="rappi">Rappi</option>
+          <option value="uber">Uber Eats</option>
+          <option value="99">99 Food</option>
+          <option value="outro">Outro</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128737; Fatores de risco & oportunidade</div>
+    <div class="toggle-row"><div><div class="toggle-label">Tem subida íngreme?</div><div class="toggle-sublabel">Escadas, morro, elevador quebrado</div></div><label class="switch"><input type="checkbox" id="subida" onchange="calcular()"><span class="slider"></span></label></div>
+    <div class="toggle-row"><div><div class="toggle-label">Muitos semáforos no caminho?</div><div class="toggle-sublabel">Mais de 3 semáforos no trajeto</div></div><label class="switch"><input type="checkbox" id="semaforo" onchange="calcular()"><span class="slider"></span></label></div>
+    <div class="toggle-row"><div><div class="toggle-label">Está chovendo?</div><div class="toggle-sublabel">Risco de atraso e dificuldade</div></div><label class="switch"><input type="checkbox" id="chuva" onchange="calcular()"><span class="slider"></span></label></div>
+    <div class="toggle-row"><div><div class="toggle-label">Horário de pico?</div><div class="toggle-sublabel">11h-14h ou 18h-21h</div></div><label class="switch"><input type="checkbox" id="pico" onchange="calcular()"><span class="slider"></span></label></div>
+    <div class="toggle-row"><div><div class="toggle-label">Cliente distante da darkstore?</div><div class="toggle-sublabel">Zona periférica ou difícil acesso</div></div><label class="switch"><input type="checkbox" id="distante" onchange="calcular()"><span class="slider"></span></label></div>
+    <div class="toggle-row"><div><div class="toggle-label">Pedido com gorjeta?</div><div class="toggle-sublabel">Cliente costuma dar gorjeta</div></div><label class="switch"><input type="checkbox" id="gorjeta" onchange="calcular()"><span class="slider"></span></label></div>
+    <div class="toggle-row"><div><div class="toggle-label">Zona de risco?</div><div class="toggle-sublabel">Área com histórico de assaltos</div></div><label class="switch"><input type="checkbox" id="risco" onchange="calcular()"><span class="slider"></span></label></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128202; Análise detalhada da IA</div>
+    <div id="detalhesAnalise">
+      <div class="detail-row"><span>Valor bruto</span><span class="detail-val" id="dValor">R$ 12,50</span></div>
+      <div class="detail-row"><span>Tempo total estimado</span><span class="detail-val" id="dTempo">23 min</span></div>
+      <div class="detail-row"><span>Distância total</span><span class="detail-val" id="dDist">6,4 km</span></div>
+      <div class="detail-row"><span>Ganho por hora (projetado)</span><span class="detail-val" id="dGanhoHora">R$ 32,61</span></div>
+      <div class="detail-row"><span>Eficiência (R$/km)</span><span class="detail-val" id="dEfic">R$ 1,95/km</span></div>
+      <div class="detail-row"><span>Custo estimado (combustível)</span><span class="detail-val" id="dCusto">-R$ 1,92</span></div>
+      <div class="detail-row"><span>Lucro líquido estimado</span><span class="detail-val" id="dLucro">R$ 10,58</span></div>
+      <div class="detail-row"><span>Gorjeta estimada</span><span class="detail-val" id="dGorjeta">R$ 0,00</span></div>
+      <div class="detail-row"><span>Score da IA</span><span class="detail-val"><span class="badge badge-pos" id="dBadge">Bom</span></span></div>
+    </div>
+    <div style="margin-top:16px;">
+      <div class="card-title" style="font-size:13px; margin-bottom:8px;">Fatores que a IA considerou:</div>
+      <div id="fatoresList"></div>
+    </div>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn btn-success" onclick="salvarCorrida()">&#128190; Salvar no histórico</button>
+    <button class="btn btn-secondary" onclick="limparForm()">&#128465; Limpar</button>
+    <button class="btn btn-warning" onclick="compararAtual()">&#128260; Comparar</button>
+  </div>
+</div>
+
+<!-- ABA 2: COMPARAR -->
+<div id="panel-comparar" class="tab-panel">
+  <div class="card">
+    <div class="card-title">&#128260; Comparador de Corridas</div>
+    <div class="card-subtitle">Compare duas corridas lado a lado para tomar a melhor decisão</div>
+
+    <div class="comparison-container">
+      <div class="comparison-card" id="compCard1">
+        <div class="comparison-title">&#128204; Corrida A</div>
+        <div class="comparison-value" id="compValor1">R$ 12,50</div>
+        <div class="comparison-sub" id="compDetalhes1">6,4 km · 23 min</div>
+        <div style="margin-top:8px;"><span class="badge badge-pos" id="compBadge1">Bom</span></div>
+        <div style="margin-top:8px; font-size:24px; font-weight:700; color:var(--accent);" id="compScore1">78</div>
+        <div style="font-size:11px; color:var(--text-tertiary);">pontos</div>
+      </div>
+      <div class="comparison-vs">VS</div>
+      <div class="comparison-card" id="compCard2">
+        <div class="comparison-title">&#128204; Corrida B</div>
+        <div class="comparison-value" id="compValor2">R$ 15,00</div>
+        <div class="comparison-sub" id="compDetalhes2">5,0 km · 20 min</div>
+        <div style="margin-top:8px;"><span class="badge badge-pos" id="compBadge2">Bom</span></div>
+        <div style="margin-top:8px; font-size:24px; font-weight:700; color:var(--accent);" id="compScore2">85</div>
+        <div style="font-size:11px; color:var(--text-tertiary);">pontos</div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px; text-align:center; padding:12px; background:var(--surface-raised); border-radius:var(--radius-md); border:1px solid var(--border);">
+      <div style="font-size:14px; font-weight:600; color:var(--text-primary);" id="compVeredicto">&#127942; Corrida B é a melhor escolha!</div>
+      <div style="font-size:12px; color:var(--text-tertiary); margin-top:4px;" id="compMotivo">Maior eficiência por km e melhor ganho por hora</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#9999; Dados da Corrida B</div>
+    <div class="grid-2">
+      <div class="field"><label>Valor da corrida B (R$)</label><input type="number" id="compBValor" value="15.00" step="0.50" min="0" oninput="atualizarComparacao()"></div>
+      <div class="field"><label>Distância ida B (km)</label><input type="number" id="compBDistIda" value="2.5" step="0.1" min="0" oninput="atualizarComparacao()"></div>
+      <div class="field"><label>Distância volta B (km)</label><input type="number" id="compBDistVolta" value="2.5" step="0.1" min="0" oninput="atualizarComparacao()"></div>
+      <div class="field"><label>Tempo estimado B (min)</label><input type="number" id="compBTempo" value="20" step="1" min="1" oninput="atualizarComparacao()"></div>
+    </div>
+    <div style="margin-top:12px;">
+      <div class="toggle-row"><div><div class="toggle-label">Subida íngreme (B)</div></div><label class="switch"><input type="checkbox" id="compBSubida" onchange="atualizarComparacao()"><span class="slider"></span></label></div>
+      <div class="toggle-row"><div><div class="toggle-label">Muitos semáforos (B)</div></div><label class="switch"><input type="checkbox" id="compBSemaforo" onchange="atualizarComparacao()"><span class="slider"></span></label></div>
+      <div class="toggle-row"><div><div class="toggle-label">Chuva (B)</div></div><label class="switch"><input type="checkbox" id="compBChuva" onchange="atualizarComparacao()"><span class="slider"></span></label></div>
+      <div class="toggle-row"><div><div class="toggle-label">Horário de pico (B)</div></div><label class="switch"><input type="checkbox" id="compBPico" onchange="atualizarComparacao()"><span class="slider"></span></label></div>
+      <div class="toggle-row"><div><div class="toggle-label">Cliente distante (B)</div></div><label class="switch"><input type="checkbox" id="compBDistante" onchange="atualizarComparacao()"><span class="slider"></span></label></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128200; Comparação detalhada</div>
+    <div id="compDetalhada">
+      <div class="detail-row"><span>Ganho/hora</span><span class="detail-val" id="compGH1">R$ 32,61</span> <span style="color:var(--text-quaternary);">vs</span> <span class="detail-val" id="compGH2">R$ 45,00</span></div>
+      <div class="detail-row"><span>Eficiência (R$/km)</span><span class="detail-val" id="compEf1">R$ 1,95</span> <span style="color:var(--text-quaternary);">vs</span> <span class="detail-val" id="compEf2">R$ 3,00</span></div>
+      <div class="detail-row"><span>Lucro líquido</span><span class="detail-val" id="compLuc1">R$ 10,58</span> <span style="color:var(--text-quaternary);">vs</span> <span class="detail-val" id="compLuc2">R$ 13,50</span></div>
+      <div class="detail-row"><span>Tempo real estimado</span><span class="detail-val" id="compTR1">23 min</span> <span style="color:var(--text-quaternary);">vs</span> <span class="detail-val" id="compTR2">20 min</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ABA 3: PROJECOES -->
+<div id="panel-projecoes" class="tab-panel">
+  <div class="card">
+    <div class="card-title">&#9881; Configuração da jornada</div>
+    <div class="grid-2">
+      <div class="field"><label>Horas trabalhadas / dia</label><input type="number" id="horasDia" value="6" step="0.5" min="1" max="16" oninput="calcularProjecoes()"></div>
+      <div class="field"><label>Dias por semana</label><input type="number" id="diasSemana" value="6" step="1" min="1" max="7" oninput="calcularProjecoes()"></div>
+      <div class="field"><label>Tempo ocioso por entrega <span class="range-val" id="ociosoVal">8 min</span></label><input type="range" id="ociosoMin" value="8" min="5" max="15" step="1" oninput="document.getElementById('ociosoVal').textContent=this.value+' min'; calcularProjecoes()"></div>
+      <div class="field"><label>Valor médio por corrida (R$)</label><input type="number" id="valorMedio" value="12" step="0.50" min="3" oninput="calcularProjecoes()"></div>
+    </div>
+    <div class="field" style="margin-top:8px;"><label>Tempo médio de entrega (ida + volta) <span class="range-val" id="tempoMedioVal">20 min</span></label><input type="range" id="tempoMedio" value="20" min="10" max="45" step="1" oninput="document.getElementById('tempoMedioVal').textContent=this.value+' min'; calcularProjecoes()"></div>
+    <div class="field" style="margin-top:8px;"><label>Custo do combustível (R$/km) <span class="range-val" id="custoKmVal">R$ 0,30</span></label><input type="range" id="custoKm" value="0.30" min="0.10" max="1.00" step="0.05" oninput="document.getElementById('custoKmVal').textContent='R$ '+parseFloat(this.value).toFixed(2).replace('.',','); calcularProjecoes()"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128230; Entregas projetadas</div>
+    <div class="grid-3">
+      <div class="metric-card"><div class="metric-value" id="entregasHora">3</div><div class="metric-label">por hora</div></div>
+      <div class="metric-card"><div class="metric-value" id="entregasDia">18</div><div class="metric-label">por dia</div></div>
+      <div class="metric-card"><div class="metric-value" id="entregasSemana">108</div><div class="metric-label">por semana</div></div>
+    </div>
+    <div class="metric-card metric-highlight" style="margin-top:10px;"><div class="metric-value" id="entregasMes">~468</div><div class="metric-label">por mês (aprox. 4,3 semanas)</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128176; Ganhos projetados</div>
+    <div class="grid-3">
+      <div class="metric-card"><div class="metric-value" id="ganhoHora">R$ 36</div><div class="metric-label">por hora</div></div>
+      <div class="metric-card"><div class="metric-value" id="ganhoDia">R$ 216</div><div class="metric-label">por dia</div></div>
+      <div class="metric-card"><div class="metric-value" id="ganhoSemana">R$ 1.296</div><div class="metric-label">por semana</div></div>
+    </div>
+    <div class="metric-card metric-highlight" style="margin-top:10px;"><div class="metric-value" id="ganhoMes">R$ 5.616</div><div class="metric-label">por mês estimado</div><div class="metric-sub" id="ganhoMesSub">Baseado em 26 dias úteis</div></div>
+    <div class="grid-2" style="margin-top:10px;">
+      <div class="metric-card metric-danger"><div class="metric-value" id="custoTotalMes">-R$ 140</div><div class="metric-label">custo combustível/mês</div></div>
+      <div class="metric-card metric-highlight"><div class="metric-value" id="lucroMes">R$ 5.476</div><div class="metric-label">lucro líquido/mês</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128202; Comparativo: ganho por período</div>
+    <div class="chart-bar" id="chartBar">
+      <div class="bar" style="height:15%;background:var(--chart-1);"><div class="bar-val">R$36</div><div class="bar-label">hora</div></div>
+      <div class="bar" style="height:35%;background:var(--chart-2);"><div class="bar-val">R$216</div><div class="bar-label">dia</div></div>
+      <div class="bar" style="height:65%;background:var(--chart-3);"><div class="bar-val">R$1.296</div><div class="bar-label">semana</div></div>
+      <div class="bar" style="height:100%;background:var(--chart-4);"><div class="bar-val">R$5.616</div><div class="bar-label">mês</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#9201; Breakdown do tempo (por entrega)</div>
+    <div id="breakdownList">
+      <div class="detail-row"><span>Deslocamento ida</span><span class="detail-val">10 min</span></div>
+      <div class="detail-row"><span>Entrega no local</span><span class="detail-val">3 min</span></div>
+      <div class="detail-row"><span>Retorno à darkstore</span><span class="detail-val">7 min</span></div>
+      <div class="detail-row"><span>Ocioso aguardando</span><span class="detail-val">8 min</span></div>
+      <div class="detail-row" style="border-top:2px solid var(--border);margin-top:4px;padding-top:8px;"><span><strong>Total por entrega</strong></span><span class="detail-val"><strong>28 min</strong></span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128161; Simulador de Estratégia</div>
+    <div class="card-subtitle">Ajuste os parâmetros para ver como pequenas mudanças impactam seus ganhos</div>
+    <div class="simulator-row">
+      <span class="simulator-label">Se eu aceitar apenas corridas acima de:</span>
+      <input type="number" class="simulator-input" id="simMinValor" value="10" step="1" min="3" oninput="simularEstrategia()">
+      <span class="simulator-result" id="simResult1">+R$ 0</span>
+    </div>
+    <div class="simulator-row">
+      <span class="simulator-label">Se eu recusar corridas com score abaixo de:</span>
+      <input type="number" class="simulator-input" id="simMinScore" value="50" step="5" min="0" max="100" oninput="simularEstrategia()">
+      <span class="simulator-result" id="simResult2">+R$ 0</span>
+    </div>
+    <div class="simulator-row">
+      <span class="simulator-label">Se eu trabalhar +1 hora/dia:</span>
+      <span class="simulator-result" id="simResult3" style="flex:1; text-align:right;">+R$ 936/mês</span>
+    </div>
+    <div class="simulator-row">
+      <span class="simulator-label">Se eu melhorar tempo médio em 2 min:</span>
+      <span class="simulator-result" id="simResult4" style="flex:1; text-align:right;">+R$ 420/mês</span>
+    </div>
+  </div>
+</div>
+
+<!-- ABA 4: META DIARIA -->
+<div id="panel-meta" class="tab-panel">
+  <div class="card">
+    <div class="card-title">&#127919; Definir meta diária</div>
+    <div class="grid-2">
+      <div class="field"><label>Meta de ganho (R$/dia)</label><input type="number" id="metaGanho" value="200" step="10" min="10" oninput="atualizarMeta()"></div>
+      <div class="field"><label>Meta de entregas (qtd/dia)</label><input type="number" id="metaEntregas" value="15" step="1" min="1" oninput="atualizarMeta()"></div>
+    </div>
+    <div class="field"><label>Horas planejadas hoje</label><input type="number" id="metaHoras" value="6" step="0.5" min="1" max="16" oninput="atualizarMeta()"></div>
+    <div class="field"><label>Meta semanal (R$)</label><input type="number" id="metaSemanal" value="1200" step="50" min="50" oninput="atualizarMeta()"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128200; Progresso de hoje</div>
+    <div class="goal-ring-container">
+      <div class="goal-ring">
+        <svg viewBox="0 0 120 120">
+          <circle class="goal-ring-bg" cx="60" cy="60" r="52"/>
+          <circle class="goal-ring-fill" id="goalRingFill" cx="60" cy="60" r="52" stroke-dasharray="326.73" stroke-dashoffset="81.68"/>
+        </svg>
+        <div class="goal-ring-text"><div class="goal-ring-pct" id="goalPct">75%</div><div class="goal-ring-label">atingido</div></div>
+      </div>
+      <div class="goal-info">
+        <div class="goal-info-row"><span>Ganho hoje</span><span class="detail-val" id="metaGanhoHoje">R$ 150,00</span></div>
+        <div class="goal-info-row"><span>Entregas hoje</span><span class="detail-val" id="metaEntregasHoje">12</span></div>
+        <div class="goal-info-row"><span>Horas trabalhadas</span><span class="detail-val" id="metaHorasHoje">4,5h</span></div>
+        <div class="goal-info-row"><span>Ganho/hora real</span><span class="detail-val" id="metaGanhoHoraReal">R$ 33,33</span></div>
+        <div class="goal-info-row"><span>Faltam para meta</span><span class="detail-val" id="metaFalta" style="color:var(--warning);">R$ 50,00</span></div>
+        <div class="goal-info-row"><span>Entregas necessárias</span><span class="detail-val" id="metaEntregasFalta" style="color:var(--warning);">3</span></div>
+        <div class="goal-info-row"><span>Meta semanal</span><span class="detail-val" id="metaSemanalProg">R$ 800 / R$ 1.200</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#10133; Registrar entrega do dia</div>
+    <div class="grid-2">
+      <div class="field"><label>Valor recebido (R$)</label><input type="number" id="regValor" value="12" step="0.50" min="0"></div>
+      <div class="field"><label>Tempo gasto (min)</label><input type="number" id="regTempo" value="25" step="1" min="1"></div>
+    </div>
+    <div class="field"><label>Distância total (km)</label><input type="number" id="regDist" value="6" step="0.1" min="0"></div>
+    <div class="field"><label>Plataforma</label>
+      <select id="regPlataforma">
+        <option value="ifood">iFood</option>
+        <option value="rappi">Rappi</option>
+        <option value="uber">Uber Eats</option>
+        <option value="99">99 Food</option>
+        <option value="outro">Outro</option>
+      </select>
+    </div>
+    <button class="btn" onclick="registrarEntrega()" style="margin-top:8px;">&#10133; Registrar entrega</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128202; Resumo do dia</div>
+    <div class="grid-2">
+      <div class="metric-card"><div class="metric-value" id="resumoMediaValor">R$ 12,50</div><div class="metric-label">valor médio/entrega</div></div>
+      <div class="metric-card"><div class="metric-value" id="resumoMediaTempo">25 min</div><div class="metric-label">tempo médio/entrega</div></div>
+      <div class="metric-card"><div class="metric-value" id="resumoTotalDist">72 km</div><div class="metric-label">distância total</div></div>
+      <div class="metric-card"><div class="metric-value" id="resumoEficiencia">R$ 2,08/km</div><div class="metric-label">eficiência</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ABA 5: JORNADA -->
+<div id="panel-jornada" class="tab-panel">
+  <div class="card">
+    <div class="card-title">&#128197; Configurar jornada de trabalho</div>
+    <div class="grid-2">
+      <div class="field"><label>Horário de início</label><input type="time" id="jornadaInicio" value="16:00" onchange="gerarJornada()"></div>
+      <div class="field"><label>Horário de término</label><input type="time" id="jornadaFim" value="22:00" onchange="gerarJornada()"></div>
+      <div class="field"><label>Tempo médio por entrega (min)</label><input type="number" id="jornadaTempoEntrega" value="20" step="1" min="5" max="60" onchange="gerarJornada()"></div>
+      <div class="field"><label>Tempo ocioso entre entregas (min) <span class="range-val" id="jornadaOciosoVal">8 min</span></label><input type="range" id="jornadaOcioso" value="8" min="5" max="15" step="1" oninput="document.getElementById('jornadaOciosoVal').textContent=this.value+' min'; gerarJornada()"></div>
+    </div>
+    <div class="field" style="margin-top:8px;">
+      <label>Tempo de pausa (almoço/lanche) (min)</label>
+      <input type="number" id="jornadaPausa" value="30" step="5" min="0" max="120" onchange="gerarJornada()">
+    </div>
+    <div class="field" style="margin-top:8px;">
+      <label>Previsão de demanda</label>
+      <select id="jornadaDemanda" onchange="gerarJornada()">
+        <option value="baixa">&#128308; Baixa (poucos pedidos)</option>
+        <option value="media" selected>&#128993; Média (fluxo normal)</option>
+        <option value="alta">&#128994; Alta (muitos pedidos)</option>
+        <option value="extrema">&#128165; Extrema (explosão de pedidos)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128336; Resumo da jornada</div>
+    <div class="grid-3">
+      <div class="metric-card"><div class="metric-value" id="jornadaTotalHoras">6h</div><div class="metric-label">total de horas</div></div>
+      <div class="metric-card"><div class="metric-value" id="jornadaTotalEntregas">18</div><div class="metric-label">entregas possíveis</div></div>
+      <div class="metric-card"><div class="metric-value" id="jornadaGanhoEstimado">R$ 216</div><div class="metric-label">ganho estimado</div></div>
+    </div>
+    <div class="grid-3" style="margin-top:10px;">
+      <div class="metric-card metric-highlight"><div class="metric-value" id="jornadaTempoTrabalhando">4h 30min</div><div class="metric-label">tempo trabalhando</div></div>
+      <div class="metric-card" style="border-color:var(--warning);"><div class="metric-value" id="jornadaTempoOcioso" style="color:var(--warning);">1h 12min</div><div class="metric-label">tempo ocioso total</div></div>
+      <div class="metric-card" style="border-color:var(--chart-5);"><div class="metric-value" id="jornadaTempoPausa" style="color:var(--chart-5);">30min</div><div class="metric-label">tempo de pausa</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128200; Distribuição do tempo na jornada</div>
+    <div class="time-bar-container">
+      <div class="time-bar-labels">
+        <span style="color:var(--accent)">&#9679; Trabalhando</span>
+        <span style="color:var(--warning)">&#9679; Ocioso</span>
+        <span style="color:var(--chart-5)">&#9679; Pausa</span>
+      </div>
+      <div class="time-bar" id="timeBar">
+        <div class="time-bar-segment work" id="timeBarWork" style="width:75%">75% Trabalhando</div>
+        <div class="time-bar-segment idle" id="timeBarIdle" style="width:20%">20% Ocioso</div>
+        <div class="time-bar-segment break" id="timeBarBreak" style="width:5%">5%</div>
+      </div>
+    </div>
+    <div class="time-stats">
+      <div class="time-stat">
+        <div class="time-stat-value" id="timeStatWork" style="color:var(--accent)">4h 30min</div>
+        <div class="time-stat-label">Trabalhando</div>
+      </div>
+      <div class="time-stat">
+        <div class="time-stat-value" id="timeStatIdle" style="color:var(--warning)">1h 12min</div>
+        <div class="time-stat-label">Ocioso</div>
+      </div>
+      <div class="time-stat">
+        <div class="time-stat-value" id="timeStatBreak" style="color:var(--chart-5)">30min</div>
+        <div class="time-stat-label">Pausa</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128221; Cronograma da jornada</div>
+    <div class="schedule-header">
+      <h3>Linha do tempo</h3>
+      <div class="schedule-legend">
+        <span><span class="schedule-legend-dot" style="background:var(--accent)"></span> Trabalho</span>
+        <span><span class="schedule-legend-dot" style="background:var(--warning)"></span> Ocioso</span>
+        <span><span class="schedule-legend-dot" style="background:var(--chart-5)"></span> Pausa</span>
+      </div>
+    </div>
+    <div class="schedule-timeline" id="scheduleTimeline"></div>
+  </div>
+</div>
+
+<!-- ABA 6: ESTATISTICAS -->
+<div id="panel-estatisticas" class="tab-panel">
+  <div class="card">
+    <div class="card-title">&#128200; Tendência de Ganhos</div>
+    <div class="card-subtitle">Evolução dos seus ganhos ao longo do tempo</div>
+    <div class="trend-chart" id="trendChart">
+      <div class="trend-axis-y" id="trendAxisY"></div>
+      <div class="trend-line">
+        <svg class="trend-svg" id="trendSvg" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <polyline id="trendLine" fill="none" stroke="var(--accent)" stroke-width="2" points=""/>
+          <polygon id="trendArea" fill="rgba(91,141,239,0.1)" points=""/>
+        </svg>
+      </div>
+      <div class="trend-axis-x" id="trendAxisX"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128293; Mapa de Calor por Horário</div>
+    <div class="card-subtitle">Quais horários são mais lucrativos para você</div>
+    <div class="heatmap-labels">
+      <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+    </div>
+    <div class="heatmap-container" id="heatmapContainer"></div>
+    <div style="margin-top:12px; display:flex; gap:12px; justify-content:center; font-size:11px; color:var(--text-tertiary);">
+      <span><span style="display:inline-block;width:12px;height:12px;background:rgba(52,211,153,0.2);border-radius:2px;vertical-align:middle;margin-right:4px;"></span> Baixo</span>
+      <span><span style="display:inline-block;width:12px;height:12px;background:rgba(52,211,153,0.5);border-radius:2px;vertical-align:middle;margin-right:4px;"></span> Médio</span>
+      <span><span style="display:inline-block;width:12px;height:12px;background:rgba(52,211,153,0.8);border-radius:2px;vertical-align:middle;margin-right:4px;"></span> Alto</span>
+      <span><span style="display:inline-block;width:12px;height:12px;background:var(--positive);border-radius:2px;vertical-align:middle;margin-right:4px;"></span> Excelente</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128202; Análise por Plataforma</div>
+    <div class="grid-2" id="plataformaStats">
+      <div class="metric-card"><div class="metric-value">iFood</div><div class="metric-label">R$ 1.200 total</div><div class="metric-sub">60 entregas</div></div>
+      <div class="metric-card"><div class="metric-value">Rappi</div><div class="metric-label">R$ 800 total</div><div class="metric-sub">40 entregas</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128200; Estatísticas do Histórico</div>
+    <div class="grid-4">
+      <div class="metric-card"><div class="metric-value" id="statTotal">0</div><div class="metric-label">total corridas</div></div>
+      <div class="metric-card"><div class="metric-value" id="statMedia">R$ 0</div><div class="metric-label">valor médio</div></div>
+      <div class="metric-card"><div class="metric-value" id="statTotalGanho">R$ 0</div><div class="metric-label">ganho total</div></div>
+      <div class="metric-card"><div class="metric-value" id="statAceitas">0%</div><div class="metric-label">taxa de aceite</div></div>
+    </div>
+    <div class="grid-4" style="margin-top:10px;">
+      <div class="metric-card metric-highlight"><div class="metric-value" id="statMelhorDia">R$ 0</div><div class="metric-label">melhor dia</div></div>
+      <div class="metric-card metric-warning"><div class="metric-value" id="statPiorDia">R$ 0</div><div class="metric-label">pior dia</div></div>
+      <div class="metric-card"><div class="metric-value" id="statMediaHora">R$ 0</div><div class="metric-label">média/hora</div></div>
+      <div class="metric-card"><div class="metric-value" id="statDistTotal">0 km</div><div class="metric-label">distância total</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ABA 7: HISTORICO -->
+<div id="panel-historico" class="tab-panel">
+  <div class="card">
+    <div class="card-title">&#128203; Histórico de corridas</div>
+    <div id="historyContainer">
+      <div class="history-empty"><div class="history-empty-icon">&#128203;</div><div>Nenhuma corrida salva ainda.</div><div style="font-size:13px; margin-top:4px;">Analise uma corrida e clique em "Salvar no histórico".</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128228; Exportar dados</div>
+    <div class="grid-2">
+      <button class="btn btn-secondary" onclick="exportarJSON()">&#128190; Exportar JSON</button>
+      <button class="btn btn-secondary" onclick="exportarCSV()">&#128229; Exportar CSV</button>
+    </div>
+    <div style="margin-top:12px; padding:12px; background:var(--surface-raised); border-radius:var(--radius-md); font-size:12px; color:var(--text-tertiary);">
+      <strong style="color:var(--text-secondary);">Dica:</strong> Os dados são salvos no navegador (localStorage). Para backup permanente, exporte regularmente para JSON ou CSV.
+    </div>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn btn-danger" onclick="limparHistorico()">&#128465; Limpar histórico</button>
+    <button class="btn btn-secondary" onclick="importarJSON()">&#128229; Importar JSON</button>
+  </div>
+  <input type="file" id="importFile" accept=".json" style="display:none" onchange="processarImportacao(event)">
+</div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- MODAL DE AJUDA -->
+<div class="modal-overlay" id="helpModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">&#10067; Como usar o DarkStore AI Pro</div>
+      <button class="modal-close" onclick="closeHelp()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:14px; color:var(--text-secondary); line-height:1.7;">
+        <p><strong>&#129504; Analisar:</strong> Preencha os dados da corrida para receber um score de 0-100. O sistema considera valor, distância, tempo e fatores de risco.</p>
+        <p><strong>&#128260; Comparar:</strong> Compare duas corridas lado a lado para escolher a melhor opção.</p>
+        <p><strong>&#128200; Projeções:</strong> Simule seus ganhos futuros baseados na sua jornada de trabalho.</p>
+        <p><strong>&#127919; Meta:</strong> Defina metas diárias e acompanhe seu progresso em tempo real.</p>
+        <p><strong>&#128197; Jornada:</strong> Planeje sua jornada de trabalho com cronograma visual.</p>
+        <p><strong>&#128202; Estatísticas:</strong> Veja tendências, mapa de calor e análise por plataforma.</p>
+        <p><strong>&#128203; Histórico:</strong> Exporte seus dados para backup ou análise externa.</p>
+        <hr style="border:none; border-top:1px solid var(--border); margin:16px 0;">
+        <p><strong>Dicas:</strong></p>
+        <ul style="margin-left:20px; margin-top:8px;">
+          <li>Use os presets rápidos para preencher dados comuns</li>
+          <li>O botão "Limpar" zera todos os campos</li>
+          <li>Ative notificações para lembretes de meta</li>
+          <li>Use o tema claro durante o dia para economizar bateria</li>
+        </ul>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeHelp()">Entendi!</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== STATE ====================
+var historico = [];
+var entregasHoje = [];
+var metaConfig = { ganho: 200, entregas: 15, horas: 6, semanal: 1200 };
+var corridaAtual = null;
+var notificacoesAtivas = false;
+
+// ==================== INIT ====================
+function initStorage() {
+  try {
+    var h = localStorage.getItem('darkstore_historico');
+    var e = localStorage.getItem('darkstore_hoje');
+    var m = localStorage.getItem('darkstore_meta');
+    var t = localStorage.getItem('darkstore_theme');
+    if (h) historico = JSON.parse(h);
+    if (e) entregasHoje = JSON.parse(e);
+    if (m) metaConfig = JSON.parse(m);
+    if (t === 'light') document.body.classList.add('light-mode');
+  } catch(err) {
+    console.warn('Erro ao carregar localStorage:', err);
+  }
+}
+
+// ==================== MENU SUSPENSO ====================
+function openMenu() {
+  document.getElementById('menuOverlay').classList.add('show');
+  document.getElementById('menuDrawer').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMenu() {
+  document.getElementById('menuOverlay').classList.remove('show');
+  document.getElementById('menuDrawer').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function switchTabMenu(clickedBtn) {
+  var tabName = clickedBtn.getAttribute('data-tab');
+  if (!tabName) return;
+
+  // Atualizar menu items
+  var allItems = document.querySelectorAll('.menu-item[data-tab]');
+  for (var i = 0; i < allItems.length; i++) {
+    allItems[i].classList.remove('active');
+  }
+  clickedBtn.classList.add('active');
+
+  // Atualizar painéis
+  var allPanels = document.querySelectorAll('.tab-panel');
+  for (var i = 0; i < allPanels.length; i++) allPanels[i].classList.remove('tab-active');
+  var selectedPanel = document.getElementById('panel-' + tabName);
+  if (selectedPanel) selectedPanel.classList.add('tab-active');
+
+  // Atualizar indicador de seção
+  var iconMap = {
+    'analisar': '&#129504;',
+    'comparar': '&#128260;',
+    'projecoes': '&#128200;',
+    'meta': '&#127919;',
+    'jornada': '&#128197;',
+    'estatisticas': '&#128202;',
+    'historico': '&#128203;'
+  };
+  var textMap = {
+    'analisar': 'Analisar Corrida',
+    'comparar': 'Comparar Corridas',
+    'projecoes': 'Projeções',
+    'meta': 'Meta Diária',
+    'jornada': 'Jornada',
+    'estatisticas': 'Estatísticas',
+    'historico': 'Histórico'
+  };
+  document.getElementById('currentIcon').innerHTML = iconMap[tabName] || '&#9679;';
+  document.getElementById('currentText').textContent = textMap[tabName] || tabName;
+
+  // Fechar menu
+  closeMenu();
+
+  // Atualizar conteúdo
+  if (tabName === 'meta') atualizarMeta();
+  if (tabName === 'historico') renderizarHistorico();
+  if (tabName === 'jornada') gerarJornada();
+  if (tabName === 'projecoes') calcularProjecoes();
+  if (tabName === 'estatisticas') atualizarEstatisticas();
+  if (tabName === 'comparar') atualizarComparacao();
+
+  // Scroll para topo
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Manter compatibilidade com código antigo
+function switchTab(clickedBtn) {
+  switchTabMenu(clickedBtn);
+}
+
+// Fechar menu com ESC
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeMenu();
+});
+
+// ==================== THEME ====================
+function toggleTheme() {
+  document.body.classList.toggle('light-mode');
+  var isLight = document.body.classList.contains('light-mode');
+  try { localStorage.setItem('darkstore_theme', isLight ? 'light' : 'dark'); } catch(e) {}
+  showToast(isLight ? 'Tema claro ativado' : 'Tema escuro ativado');
+}
+
+// ==================== NOTIFICATIONS ====================
+function toggleNotifications() {
+  notificacoesAtivas = !notificacoesAtivas;
+  if (notificacoesAtivas) {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      showToast('Notificações ativadas!');
+    } else if ('Notification' in window && Notification.permission !== 'denied') {
+      Notification.requestPermission().then(function(p) {
+        if (p === 'granted') showToast('Notificações ativadas!');
+        else { notificacoesAtivas = false; showToast('Permissão negada', 'error'); }
+      });
+    } else {
+      notificacoesAtivas = false;
+      showToast('Notificações não suportadas', 'error');
+    }
+  } else {
+    showToast('Notificações desativadas');
+  }
+}
+
+function enviarNotificacao(titulo, corpo) {
+  if (notificacoesAtivas && 'Notification' in window && Notification.permission === 'granted') {
+    new Notification(titulo, { body: corpo, icon: '&#128640;' });
+  }
+}
+
+// ==================== HELP MODAL ====================
+function showHelp() { document.getElementById('helpModal').classList.add('show'); }
+function closeHelp() { document.getElementById('helpModal').classList.remove('show'); }
+
+// ==================== UTILS ====================
+function parseNum(val) {
+  if (typeof val === 'number') return isNaN(val) ? 0 : val;
+  if (!val || val === '') return 0;
+  var s = String(val).trim();
+  var hasComma = s.indexOf(',') !== -1;
+  var hasDot = s.indexOf('.') !== -1;
+  if (hasComma && hasDot) {
+    var lastComma = s.lastIndexOf(',');
+    var lastDot = s.lastIndexOf('.');
+    if (lastComma > lastDot) {
+      s = s.replace(/\./g, '').replace(',', '.');
+    } else {
+      s = s.replace(/,/g, '');
+    }
+  } else if (hasComma && !hasDot) {
+    s = s.replace(',', '.');
+  }
+  var n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+
+function formatMoney(v) {
+  var n = parseNum(v);
+  return 'R$ ' + n.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+}
+function formatNumber(n) {
+  return parseNum(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+}
+function showToast(msg, type) {
+  type = type || 'success';
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast toast-' + type;
+  setTimeout(function() { t.classList.add('show'); }, 10);
+  setTimeout(function() { t.classList.remove('show'); }, 3000);
+}
+function getNow() {
+  return new Date().toLocaleString('pt-BR');
+}
+function getTodayKey() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function pad2(n) { return String(n).padStart(2,'0'); }
+function minutesToTime(m) {
+  var h = Math.floor(m / 60) % 24;
+  var min = Math.floor(m % 60);
+  return pad2(h) + ':' + pad2(min);
+}
+function timeToMinutes(t) {
+  var parts = String(t).split(':');
+  if (parts.length < 2) return 0;
+  return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+}
+function formatDuration(minutes) {
+  var m = Math.round(parseNum(minutes));
+  if (m < 0) m = 0;
+  var h = Math.floor(m / 60);
+  var min = m % 60;
+  if (h > 0 && min > 0) return h + 'h ' + min + 'min';
+  if (h > 0) return h + 'h';
+  return min + 'min';
+}
+function clamp(v, min, max) {
+  v = parseNum(v);
+  if (v < min) return min;
+  if (v > max) return max;
+  return v;
+}
+function getDayOfWeek() {
+  return new Date().getDay();
+}
+function getHour() {
+  return new Date().getHours();
+}
+
+// ==================== PRESETS ====================
+function presetCorrida(tipo) {
+  var presets = {
+    curta: { valor: 10, distIda: 2, distVolta: 2, tempoEst: 12, subida: false, semaforo: false, chuva: false, pico: false, distante: false },
+    media: { valor: 15, distIda: 3.5, distVolta: 3.5, tempoEst: 20, subida: false, semaforo: true, chuva: false, pico: true, distante: false },
+    longa: { valor: 25, distIda: 5, distVolta: 5, tempoEst: 30, subida: false, semaforo: true, chuva: false, pico: false, distante: true },
+    pico: { valor: 14, distIda: 3, distVolta: 3, tempoEst: 22, subida: false, semaforo: true, chuva: false, pico: true, distante: false },
+    chuva: { valor: 16, distIda: 3, distVolta: 3, tempoEst: 25, subida: false, semaforo: false, chuva: true, pico: false, distante: false }
+  };
+  var p = presets[tipo];
+  if (!p) return;
+  document.getElementById('valor').value = p.valor;
+  document.getElementById('distIda').value = p.distIda;
+  document.getElementById('distVolta').value = p.distVolta;
+  document.getElementById('tempoEst').value = p.tempoEst;
+  document.getElementById('subida').checked = p.subida;
+  document.getElementById('semaforo').checked = p.semaforo;
+  document.getElementById('chuva').checked = p.chuva;
+  document.getElementById('pico').checked = p.pico;
+  document.getElementById('distante').checked = p.distante;
+
+  // Atualizar botões ativos
+  var btns = document.querySelectorAll('.quick-action-btn');
+  btns.forEach(function(b) { b.classList.remove('active'); });
+  event.target.classList.add('active');
+
+  calcular();
+  showToast('Preset "' + tipo + '" aplicado!');
+}
+
+// ==================== ANALISAR ====================
+function calcular() {
+  var valor = parseNum(document.getElementById('valor').value);
+  var distIda = parseNum(document.getElementById('distIda').value);
+  var distVolta = parseNum(document.getElementById('distVolta').value);
+  var tempoEst = parseNum(document.getElementById('tempoEst').value);
+  var subida = document.getElementById('subida').checked;
+  var semaforo = document.getElementById('semaforo').checked;
+  var chuva = document.getElementById('chuva').checked;
+  var pico = document.getElementById('pico').checked;
+  var distante = document.getElementById('distante').checked;
+  var gorjeta = document.getElementById('gorjeta').checked;
+  var risco = document.getElementById('risco').checked;
+  var tipoVeiculo = document.getElementById('tipoVeiculo').value;
+  var plataforma = document.getElementById('plataforma').value;
+
+  if (tempoEst < 1) tempoEst = 1;
+  var distTotal = distIda + distVolta;
+
+  // Custo por km baseado no veículo
+  var custoPorKm = { moto: 0.30, bike: 0.05, carro: 0.80, patinete: 0.10 };
+  var custoComb = distTotal * (custoPorKm[tipoVeiculo] || 0.30);
+
+  // Gorjeta estimada
+  var gorjetaEst = gorjeta ? valor * 0.10 : 0;
+
+  // Score calculation
+  var penalidade = 0;
+  var fatores = [];
+
+  if(subida) { penalidade += 12; fatores.push({text:'Subida íngreme: -12 pts', color:'var(--danger)'}); }
+  if(semaforo) { penalidade += 7; fatores.push({text:'Muitos semáforos: -7 pts', color:'var(--warning)'}); }
+  if(chuva) { penalidade += 15; fatores.push({text:'Chuva: -15 pts', color:'var(--danger)'}); }
+  if(pico) { penalidade += 10; fatores.push({text:'Horário de pico: -10 pts', color:'var(--warning)'}); }
+  if(distante) { penalidade += 8; fatores.push({text:'Cliente distante: -8 pts', color:'var(--warning)'}); }
+  if(risco) { penalidade += 20; fatores.push({text:'Zona de risco: -20 pts', color:'var(--danger)'}); }
+
+  var bonus = 0;
+  if(valor >= 25) { bonus += 15; fatores.push({text:'Valor excelente: +15 pts', color:'var(--positive)'}); }
+  else if(valor >= 18) { bonus += 10; fatores.push({text:'Valor alto: +10 pts', color:'var(--positive)'}); }
+  else if(valor >= 12) { bonus += 5; fatores.push({text:'Valor bom: +5 pts', color:'var(--positive)'}); }
+
+  if(distTotal <= 3) { bonus += 12; fatores.push({text:'Distância curta: +12 pts', color:'var(--positive)'}); }
+  else if(distTotal <= 5) { bonus += 7; fatores.push({text:'Distância média: +7 pts', color:'var(--positive)'}); }
+  else if(distTotal <= 8) { bonus += 3; fatores.push({text:'Distância aceitável: +3 pts', color:'var(--positive)'}); }
+
+  if(tempoEst <= 12) { bonus += 10; fatores.push({text:'Entrega rápida: +10 pts', color:'var(--positive)'}); }
+  else if(tempoEst <= 18) { bonus += 5; fatores.push({text:'Tempo bom: +5 pts', color:'var(--positive)'}); }
+
+  var ganhoPorKm = distTotal > 0 ? valor / distTotal : 0;
+  if(ganhoPorKm >= 4) { bonus += 8; fatores.push({text:'Ótimo ganho/km: +8 pts', color:'var(--positive)'}); }
+  else if(ganhoPorKm >= 2.5) { bonus += 4; fatores.push({text:'Bom ganho/km: +4 pts', color:'var(--positive)'}); }
+
+  if(gorjeta) { bonus += 5; fatores.push({text:'Gorjeta esperada: +5 pts', color:'var(--positive)'}); }
+
+  var score = 50 + bonus - penalidade;
+  score = clamp(score, 0, 100);
+
+  // Tempo real com ajustes
+  var tempoReal = tempoEst;
+  if(subida) tempoReal += 5;
+  if(semaforo) tempoReal += 4;
+  if(chuva) tempoReal += 8;
+  if(pico) tempoReal += 6;
+  if(distante) tempoReal += 4;
+  if(risco) tempoReal += 3;
+
+  var ganhoHora = tempoReal > 0 ? (valor / tempoReal) * 60 : 0;
+  var efic = distTotal > 0 ? valor / distTotal : 0;
+  var lucro = valor - custoComb + gorjetaEst;
+
+  // Veredicto visual
+  var box = document.getElementById('verdictBox');
+  var icon = document.getElementById('verdictIcon');
+  var text = document.getElementById('verdictText');
+  var sub = document.getElementById('verdictSub');
+  var fill = document.getElementById('scoreFill');
+
+  box.className = 'verdict-card';
+  fill.style.width = score + '%';
+
+  if(score >= 70) {
+    box.classList.add('verdict-yes');
+    icon.textContent = String.fromCodePoint(0x2705);
+    text.textContent = 'Vale a pena aceitar!';
+    text.style.color = 'var(--positive)';
+    fill.style.background = 'var(--positive)';
+    sub.textContent = 'Score: ' + score + '/100 - ' + (score>=85?'Excelente oportunidade':'Boa oportunidade');
+  } else if(score >= 45) {
+    box.classList.add('verdict-maybe');
+    icon.textContent = String.fromCodePoint(0x26A0) + String.fromCodePoint(0xFE0F);
+    text.textContent = 'Avalie com cuidado';
+    text.style.color = 'var(--warning)';
+    fill.style.background = 'var(--warning)';
+    sub.textContent = 'Score: ' + score + '/100 - Razoável, mas tem riscos';
+  } else {
+    box.classList.add('verdict-no');
+    icon.textContent = String.fromCodePoint(0x274C);
+    text.textContent = 'Não vale a pena';
+    text.style.color = 'var(--danger)';
+    fill.style.background = 'var(--danger)';
+    sub.textContent = 'Score: ' + score + '/100 - Melhor recusar';
+  }
+
+  document.getElementById('dValor').textContent = formatMoney(valor);
+  document.getElementById('dTempo').textContent = Math.round(tempoReal) + ' min';
+  document.getElementById('dDist').textContent = distTotal.toFixed(1).replace('.',',') + ' km';
+  document.getElementById('dGanhoHora').textContent = formatMoney(ganhoHora);
+  document.getElementById('dEfic').textContent = 'R$ ' + efic.toFixed(2).replace('.',',') + '/km';
+  document.getElementById('dCusto').textContent = '-R$ ' + custoComb.toFixed(2).replace('.',',');
+  document.getElementById('dLucro').textContent = formatMoney(lucro);
+  document.getElementById('dGorjeta').textContent = formatMoney(gorjetaEst);
+
+  var badge = document.getElementById('dBadge');
+  if(score >= 70) { badge.className='badge badge-pos'; badge.textContent='Bom'; }
+  else if(score >= 45) { badge.className='badge badge-warn'; badge.textContent='Médio'; }
+  else { badge.className='badge badge-neg'; badge.textContent='Ruim'; }
+
+  var fatoresEl = document.getElementById('fatoresList');
+  if(fatores.length === 0) {
+    fatoresEl.innerHTML = '<div class="factor-item"><div class="factor-dot" style="background:var(--text-quaternary)"></div>Sem fatores de risco ou bônus identificados</div>';
+  } else {
+    var fatoresHTML = '';
+    for (var fi = 0; fi < fatores.length; fi++) {
+      var f = fatores[fi];
+      fatoresHTML += '<div class="factor-item"><div class="factor-dot" style="background:'+f.color+'"></div>'+f.text+'</div>';
+    }
+    fatoresEl.innerHTML = fatoresHTML;
+  }
+
+  // AI Insight
+  var insightText = '';
+  if (score >= 80) {
+    insightText = '<strong>Excelente oportunidade!</strong> Esta corrida tem ótimo custo-benefício. ';
+    if (ganhoHora > 40) insightText += 'Seu ganho por hora está acima da média do mercado. ';
+    insightText += 'Recomendamos aceitar imediatamente.';
+  } else if (score >= 60) {
+    insightText = '<strong>Boa oportunidade.</strong> A corrida é viável, mas observe os fatores de risco. ';
+    if (chuva) insightText += 'Com a chuva, lembre-se de ir com cuidado. ';
+    insightText += 'Aceite se não houver opções melhores no momento.';
+  } else if (score >= 40) {
+    insightText = '<strong>Avalie com cuidado.</strong> Esta corrida tem riscos significativos. ';
+    if (risco) insightText += 'A zona de risco é um fator sério a considerar. ';
+    insightText += 'Só aceite se realmente precisar completar uma meta.';
+  } else {
+    insightText = '<strong>Não recomendado.</strong> O custo-benefício desta corrida é baixo. ';
+    insightText += 'É melhor aguardar uma oportunidade melhor. ';
+    if (distTotal > 8 && valor < 15) insightText += 'A distância não compensa o valor oferecido.';
+  }
+
+  // Adicionar comparação com histórico
+  if (historico.length > 5) {
+    var mediaScore = historico.reduce(function(a,c){return a+c.score;},0) / historico.length;
+    if (score > mediaScore + 10) insightText += ' <br><br>&#127942; <strong>Acima da sua média!</strong> Esta corrida é melhor que ' + Math.round((historico.filter(function(c){return c.score < score;}).length / historico.length)*100) + '% das suas corridas anteriores.';
+  }
+
+  document.getElementById('aiInsightText').innerHTML = insightText;
+
+  corridaAtual = { valor: valor, distIda: distIda, distVolta: distVolta, distTotal: distTotal, tempoEst: tempoEst, tempoReal: tempoReal, subida: subida, semaforo: semaforo, chuva: chuva, pico: pico, distante: distante, gorjeta: gorjeta, risco: risco, score: score, ganhoHora: ganhoHora, efic: efic, custoComb: custoComb, lucro: lucro, gorjetaEst: gorjetaEst, tipoVeiculo: tipoVeiculo, plataforma: plataforma };
+  return corridaAtual;
+}
+
+function salvarCorrida() {
+  var dados = calcular();
+  if(dados.valor <= 0) {
+    showToast('Preencha o valor da corrida!', 'error');
+    return;
+  }
+  var corrida = {
+    id: Date.now(),
+    data: getNow(),
+    dataKey: getTodayKey(),
+    valor: dados.valor,
+    distIda: dados.distIda,
+    distVolta: dados.distVolta,
+    distTotal: dados.distTotal,
+    tempoEst: dados.tempoEst,
+    tempoReal: dados.tempoReal,
+    subida: dados.subida,
+    semaforo: dados.semaforo,
+    chuva: dados.chuva,
+    pico: dados.pico,
+    distante: dados.distante,
+    gorjeta: dados.gorjeta,
+    risco: dados.risco,
+    score: dados.score,
+    ganhoHora: dados.ganhoHora,
+    efic: dados.efic,
+    custoComb: dados.custoComb,
+    lucro: dados.lucro,
+    gorjetaEst: dados.gorjetaEst,
+    tipoVeiculo: dados.tipoVeiculo,
+    plataforma: dados.plataforma,
+    aceita: dados.score >= 45
+  };
+  historico.unshift(corrida);
+  try { localStorage.setItem('darkstore_historico', JSON.stringify(historico)); } catch(e) {}
+  showToast('Corrida salva no histórico!');
+
+  // Notificação se atingir meta
+  var ganhoHoje = entregasHoje.reduce(function(a,e){return a+parseNum(e.valor);},0) + dados.valor;
+  if (ganhoHoje >= metaConfig.ganho && notificacoesAtivas) {
+    enviarNotificacao('Meta atingida!', 'Parabéns! Você atingiu sua meta diária de R$ ' + metaConfig.ganho);
+  }
+}
+
+function limparForm() {
+  document.getElementById('valor').value = '';
+  document.getElementById('distIda').value = '';
+  document.getElementById('distVolta').value = '';
+  document.getElementById('tempoEst').value = '';
+  document.getElementById('subida').checked = false;
+  document.getElementById('semaforo').checked = false;
+  document.getElementById('chuva').checked = false;
+  document.getElementById('pico').checked = false;
+  document.getElementById('distante').checked = false;
+  document.getElementById('gorjeta').checked = false;
+  document.getElementById('risco').checked = false;
+  document.getElementById('tipoVeiculo').value = 'moto';
+  document.getElementById('plataforma').value = 'ifood';
+
+  var btns = document.querySelectorAll('.quick-action-btn');
+  btns.forEach(function(b) { b.classList.remove('active'); });
+
+  calcular();
+  showToast('Formulário limpo!');
+}
+
+// ==================== COMPARAR ====================
+function compararAtual() {
+  if (!corridaAtual || corridaAtual.valor <= 0) {
+    showToast('Analise uma corrida primeiro!', 'error');
+    return;
+  }
+  switchTab(document.querySelector('[data-tab="comparar"]'));
+  atualizarComparacao();
+}
+
+function calcularScoreB() {
+  var valor = parseNum(document.getElementById('compBValor').value);
+  var distIda = parseNum(document.getElementById('compBDistIda').value);
+  var distVolta = parseNum(document.getElementById('compBDistVolta').value);
+  var tempoEst = parseNum(document.getElementById('compBTempo').value);
+  var subida = document.getElementById('compBSubida').checked;
+  var semaforo = document.getElementById('compBSemaforo').checked;
+  var chuva = document.getElementById('compBChuva').checked;
+  var pico = document.getElementById('compBPico').checked;
+  var distante = document.getElementById('compBDistante').checked;
+
+  if (tempoEst < 1) tempoEst = 1;
+  var distTotal = distIda + distVolta;
+  var custoComb = distTotal * 0.30;
+
+  var penalidade = 0;
+  if(subida) penalidade += 12;
+  if(semaforo) penalidade += 7;
+  if(chuva) penalidade += 15;
+  if(pico) penalidade += 10;
+  if(distante) penalidade += 8;
+
+  var bonus = 0;
+  if(valor >= 25) bonus += 15;
+  else if(valor >= 18) bonus += 10;
+  else if(valor >= 12) bonus += 5;
+  if(distTotal <= 3) bonus += 12;
+  else if(distTotal <= 5) bonus += 7;
+  else if(distTotal <= 8) bonus += 3;
+  if(tempoEst <= 12) bonus += 10;
+  else if(tempoEst <= 18) bonus += 5;
+  var ganhoPorKm = distTotal > 0 ? valor / distTotal : 0;
+  if(ganhoPorKm >= 4) bonus += 8;
+  else if(ganhoPorKm >= 2.5) bonus += 4;
+
+  var score = 50 + bonus - penalidade;
+  score = clamp(score, 0, 100);
+
+  var tempoReal = tempoEst;
+  if(subida) tempoReal += 5;
+  if(semaforo) tempoReal += 4;
+  if(chuva) tempoReal += 8;
+  if(pico) tempoReal += 6;
+  if(distante) tempoReal += 4;
+
+  var ganhoHora = tempoReal > 0 ? (valor / tempoReal) * 60 : 0;
+  var efic = distTotal > 0 ? valor / distTotal : 0;
+  var lucro = valor - custoComb;
+
+  return { valor: valor, distTotal: distTotal, tempoReal: tempoReal, score: score, ganhoHora: ganhoHora, efic: efic, lucro: lucro };
+}
+
+function atualizarComparacao() {
+  var a = corridaAtual || { valor: 12.5, distTotal: 6.4, tempoReal: 23, score: 78, ganhoHora: 32.61, efic: 1.95, lucro: 10.58 };
+  var b = calcularScoreB();
+
+  document.getElementById('compValor1').textContent = formatMoney(a.valor);
+  document.getElementById('compDetalhes1').textContent = a.distTotal.toFixed(1).replace('.',',') + ' km · ' + Math.round(a.tempoReal) + ' min';
+  document.getElementById('compScore1').textContent = Math.round(a.score);
+  var badge1 = document.getElementById('compBadge1');
+  if(a.score >= 70) { badge1.className='badge badge-pos'; badge1.textContent='Bom'; }
+  else if(a.score >= 45) { badge1.className='badge badge-warn'; badge1.textContent='Médio'; }
+  else { badge1.className='badge badge-neg'; badge1.textContent='Ruim'; }
+
+  document.getElementById('compValor2').textContent = formatMoney(b.valor);
+  document.getElementById('compDetalhes2').textContent = b.distTotal.toFixed(1).replace('.',',') + ' km · ' + Math.round(b.tempoReal) + ' min';
+  document.getElementById('compScore2').textContent = Math.round(b.score);
+  var badge2 = document.getElementById('compBadge2');
+  if(b.score >= 70) { badge2.className='badge badge-pos'; badge2.textContent='Bom'; }
+  else if(b.score >= 45) { badge2.className='badge badge-warn'; badge2.textContent='Médio'; }
+  else { badge2.className='badge badge-neg'; badge2.textContent='Ruim'; }
+
+  document.getElementById('compGH1').textContent = formatMoney(a.ganhoHora);
+  document.getElementById('compGH2').textContent = formatMoney(b.ganhoHora);
+  document.getElementById('compEf1').textContent = 'R$ ' + a.efic.toFixed(2).replace('.',',');
+  document.getElementById('compEf2').textContent = 'R$ ' + b.efic.toFixed(2).replace('.',',');
+  document.getElementById('compLuc1').textContent = formatMoney(a.lucro);
+  document.getElementById('compLuc2').textContent = formatMoney(b.lucro);
+  document.getElementById('compTR1').textContent = Math.round(a.tempoReal) + ' min';
+  document.getElementById('compTR2').textContent = Math.round(b.tempoReal) + ' min';
+
+  var card1 = document.getElementById('compCard1');
+  var card2 = document.getElementById('compCard2');
+  card1.classList.remove('winner', 'loser');
+  card2.classList.remove('winner', 'loser');
+
+  var veredicto = document.getElementById('compVeredicto');
+  var motivo = document.getElementById('compMotivo');
+
+  if (b.score > a.score + 5) {
+    card2.classList.add('winner');
+    card1.classList.add('loser');
+    veredicto.innerHTML = '&#127942; Corrida B é a melhor escolha!';
+    motivo.textContent = 'Score ' + (b.score - a.score) + ' pontos acima da Corrida A';
+  } else if (a.score > b.score + 5) {
+    card1.classList.add('winner');
+    card2.classList.add('loser');
+    veredicto.innerHTML = '&#127942; Corrida A é a melhor escolha!';
+    motivo.textContent = 'Score ' + (a.score - b.score) + ' pontos acima da Corrida B';
+  } else {
+    veredicto.innerHTML = '&#9878; As duas corridas são equivalentes';
+    motivo.textContent = 'Diferença de score menor que 5 pontos';
+  }
+}
+
+// ==================== PROJECOES ====================
+function calcularProjecoes() {
+  var horasDia = clamp(document.getElementById('horasDia').value, 1, 16);
+  var diasSemana = clamp(document.getElementById('diasSemana').value, 1, 7);
+  var ocioso = clamp(document.getElementById('ociosoMin').value, 0, 60);
+  var valorMedio = parseNum(document.getElementById('valorMedio').value);
+  var tempoMedio = clamp(document.getElementById('tempoMedio').value, 1, 120);
+  var custoKm = parseNum(document.getElementById('custoKm').value);
+
+  if (valorMedio < 1) valorMedio = 1;
+
+  var tempoPorEntrega = tempoMedio + ocioso;
+  var entregasHora = tempoPorEntrega > 0 ? Math.floor(60 / tempoPorEntrega) : 0;
+  if (entregasHora < 1) entregasHora = 1;
+
+  var entregasDia = entregasHora * horasDia;
+  var entregasSemana = entregasDia * diasSemana;
+  var entregasMes = Math.round(entregasSemana * 4.345);
+
+  var ganhoHora = entregasHora * valorMedio;
+  var ganhoDia = entregasDia * valorMedio;
+  var ganhoSemana = entregasSemana * valorMedio;
+  var ganhoMes = entregasMes * valorMedio;
+
+  // Calcular distância média por entrega (estimativa)
+  var distMedia = 6.4; // km médio por entrega
+  var custoTotalMes = entregasMes * distMedia * custoKm;
+  var lucroMes = ganhoMes - custoTotalMes;
+
+  document.getElementById('entregasHora').textContent = entregasHora;
+  document.getElementById('entregasDia').textContent = entregasDia;
+  document.getElementById('entregasSemana').textContent = entregasSemana;
+  document.getElementById('entregasMes').textContent = '~' + formatNumber(entregasMes);
+
+  document.getElementById('ganhoHora').textContent = formatMoney(ganhoHora);
+  document.getElementById('ganhoDia').textContent = formatMoney(ganhoDia);
+  document.getElementById('ganhoSemana').textContent = formatMoney(ganhoSemana);
+  document.getElementById('ganhoMes').textContent = formatMoney(ganhoMes);
+  document.getElementById('ganhoMesSub').textContent = 'Baseado em ' + Math.round(diasSemana * 4.345) + ' dias úteis/mês';
+  document.getElementById('custoTotalMes').textContent = '-R$ ' + formatNumber(custoTotalMes);
+  document.getElementById('lucroMes').textContent = formatMoney(lucroMes);
+
+  var ida = Math.round(tempoMedio * 0.45);
+  var entrega = Math.max(1, Math.round(tempoMedio * 0.20));
+  var volta = Math.max(1, tempoMedio - ida - entrega);
+
+  document.getElementById('breakdownList').innerHTML =
+    '<div class="detail-row"><span>Deslocamento ida</span><span class="detail-val">'+ida+' min</span></div>' +
+    '<div class="detail-row"><span>Entrega no local</span><span class="detail-val">'+entrega+' min</span></div>' +
+    '<div class="detail-row"><span>Retorno à darkstore</span><span class="detail-val">'+volta+' min</span></div>' +
+    '<div class="detail-row"><span>Ocioso aguardando</span><span class="detail-val">'+ocioso+' min</span></div>' +
+    '<div class="detail-row" style="border-top:2px solid var(--border);margin-top:4px;padding-top:8px;"><span><strong>Total por entrega</strong></span><span class="detail-val"><strong>'+tempoPorEntrega+' min</strong></span></div>';
+
+  var maxVal = Math.max(ganhoMes, 1);
+  var vals = [ganhoHora, ganhoDia, ganhoSemana, ganhoMes];
+  var labels = ['hora','dia','semana','mês'];
+  var colors = ['var(--chart-1)','var(--chart-2)','var(--chart-3)','var(--chart-4)'];
+  var chartHTML = '';
+  for (var vi = 0; vi < vals.length; vi++) {
+    var v = vals[vi];
+    var h = Math.max(8, (v/maxVal)*100);
+    chartHTML += '<div class="bar" style="height:'+h+'%;background:'+colors[vi]+';"><div class="bar-val">'+formatMoney(v)+'</div><div class="bar-label">'+labels[vi]+'</div></div>';
+  }
+  document.getElementById('chartBar').innerHTML = chartHTML;
+
+  simularEstrategia();
+}
+
+function simularEstrategia() {
+  var minValor = parseNum(document.getElementById('simMinValor').value);
+  var minScore = parseNum(document.getElementById('simMinScore').value);
+
+  var horasDia = parseNum(document.getElementById('horasDia').value) || 6;
+  var diasSemana = parseNum(document.getElementById('diasSemana').value) || 6;
+  var valorMedio = parseNum(document.getElementById('valorMedio').value) || 12;
+
+  // Simular filtro por valor mínimo
+  var ganhoExtraValor = 0;
+  if (minValor > valorMedio * 0.7) {
+    ganhoExtraValor = (minValor - valorMedio * 0.8) * 0.3 * horasDia * diasSemana * 4.345;
+  }
+  document.getElementById('simResult1').textContent = (ganhoExtraValor > 0 ? '+' : '') + formatMoney(ganhoExtraValor) + '/mês';
+  document.getElementById('simResult1').style.color = ganhoExtraValor > 0 ? 'var(--positive)' : 'var(--text-tertiary)';
+
+  // Simular filtro por score
+  var ganhoExtraScore = 0;
+  if (minScore > 50) {
+    ganhoExtraScore = (minScore - 50) * 2 * diasSemana * 4.345;
+  }
+  document.getElementById('simResult2').textContent = (ganhoExtraScore > 0 ? '+' : '') + formatMoney(ganhoExtraScore) + '/mês';
+  document.getElementById('simResult2').style.color = ganhoExtraScore > 0 ? 'var(--positive)' : 'var(--text-tertiary)';
+
+  // +1 hora
+  var extraHora = valorMedio * 3 * diasSemana * 4.345;
+  document.getElementById('simResult3').textContent = '+' + formatMoney(extraHora) + '/mês';
+
+  // -2 min
+  var extraTempo = valorMedio * 0.5 * horasDia * diasSemana * 4.345;
+  document.getElementById('simResult4').textContent = '+' + formatMoney(extraTempo) + '/mês';
+}
+
+// ==================== META DIARIA ====================
+function atualizarMeta() {
+  metaConfig.ganho = clamp(document.getElementById('metaGanho').value, 10, 9999);
+  metaConfig.entregas = clamp(document.getElementById('metaEntregas').value, 1, 999);
+  metaConfig.horas = clamp(document.getElementById('metaHoras').value, 1, 16);
+  metaConfig.semanal = clamp(document.getElementById('metaSemanal').value, 50, 99999);
+  try { localStorage.setItem('darkstore_meta', JSON.stringify(metaConfig)); } catch(e) {}
+
+  var ganhoHoje = 0;
+  var tempoTotalMin = 0;
+  var distTotal = 0;
+  var entregasCount = entregasHoje.length;
+
+  for (var i = 0; i < entregasHoje.length; i++) {
+    ganhoHoje += parseNum(entregasHoje[i].valor);
+    tempoTotalMin += parseNum(entregasHoje[i].tempo) || 25;
+    distTotal += parseNum(entregasHoje[i].dist) || 0;
+  }
+
+  var horasHoje = tempoTotalMin / 60;
+  var ganhoHoraReal = horasHoje > 0 ? ganhoHoje / horasHoje : 0;
+
+  var pctGanho = metaConfig.ganho > 0 ? Math.min(100, (ganhoHoje / metaConfig.ganho) * 100) : 0;
+  var pctEntregas = metaConfig.entregas > 0 ? Math.min(100, (entregasCount / metaConfig.entregas) * 100) : 0;
+  var pct = (pctGanho + pctEntregas) / 2;
+
+  var circumference = 2 * Math.PI * 52;
+  var offset = circumference - (pct / 100) * circumference;
+  document.getElementById('goalRingFill').style.strokeDashoffset = offset;
+  document.getElementById('goalPct').textContent = Math.round(pct) + '%';
+
+  document.getElementById('metaGanhoHoje').textContent = formatMoney(ganhoHoje);
+  document.getElementById('metaEntregasHoje').textContent = entregasCount;
+  document.getElementById('metaHorasHoje').textContent = horasHoje.toFixed(1).replace('.',',') + 'h';
+  document.getElementById('metaGanhoHoraReal').textContent = formatMoney(ganhoHoraReal);
+
+  var faltaGanho = Math.max(0, metaConfig.ganho - ganhoHoje);
+  var faltaEntregas = Math.max(0, metaConfig.entregas - entregasCount);
+  document.getElementById('metaFalta').textContent = formatMoney(faltaGanho);
+  document.getElementById('metaEntregasFalta').textContent = faltaEntregas;
+
+  // Meta semanal
+  var ganhoSemana = 0;
+  var hoje = new Date();
+  var inicioSemana = new Date(hoje);
+  inicioSemana.setDate(hoje.getDate() - hoje.getDay());
+  var inicioSemanaKey = inicioSemana.getFullYear() + '-' + String(inicioSemana.getMonth()+1).padStart(2,'0') + '-' + String(inicioSemana.getDate()).padStart(2,'0');
+
+  for (var hi = 0; hi < historico.length; hi++) {
+    if (historico[hi].dataKey >= inicioSemanaKey) {
+      ganhoSemana += parseNum(historico[hi].valor);
+    }
+  }
+
+  document.getElementById('metaSemanalProg').textContent = formatMoney(ganhoSemana) + ' / ' + formatMoney(metaConfig.semanal);
+
+  var mediaValor = entregasCount > 0 ? ganhoHoje / entregasCount : 0;
+  var mediaTempo = entregasCount > 0 ? (tempoTotalMin / entregasCount) : 0;
+  var efic = distTotal > 0 ? ganhoHoje / distTotal : 0;
+
+  document.getElementById('resumoMediaValor').textContent = formatMoney(mediaValor);
+  document.getElementById('resumoMediaTempo').textContent = Math.round(mediaTempo) + ' min';
+  document.getElementById('resumoTotalDist').textContent = distTotal.toFixed(1).replace('.',',') + ' km';
+  document.getElementById('resumoEficiencia').textContent = 'R$ ' + efic.toFixed(2).replace('.',',') + '/km';
+}
+
+function registrarEntrega() {
+  var valor = parseNum(document.getElementById('regValor').value);
+  var tempo = parseNum(document.getElementById('regTempo').value);
+  var dist = parseNum(document.getElementById('regDist').value);
+  var plataforma = document.getElementById('regPlataforma').value;
+
+  if(valor <= 0) {
+    showToast('Informe o valor da entrega!', 'error');
+    return;
+  }
+  if(tempo < 1) tempo = 25;
+
+  entregasHoje.push({ valor: valor, tempo: tempo, dist: dist, plataforma: plataforma, hora: getNow() });
+  try { localStorage.setItem('darkstore_hoje', JSON.stringify(entregasHoje)); } catch(e) {}
+  atualizarMeta();
+  showToast('Entrega registrada!');
+
+  document.getElementById('regValor').value = '';
+  document.getElementById('regTempo').value = '';
+  document.getElementById('regDist').value = '';
+
+  // Notificação de meta
+  var ganhoTotal = entregasHoje.reduce(function(a,e){return a+parseNum(e.valor);},0);
+  if (ganhoTotal >= metaConfig.ganho && notificacoesAtivas) {
+    enviarNotificacao('Meta diária atingida!', 'Você atingiu R$ ' + metaConfig.ganho + ' hoje!');
+  }
+}
+
+// ==================== JORNADA / AGENDAMENTO ====================
+function gerarJornada() {
+  var inicioStr = document.getElementById('jornadaInicio').value || '16:00';
+  var fimStr = document.getElementById('jornadaFim').value || '22:00';
+  var tempoEntrega = clamp(document.getElementById('jornadaTempoEntrega').value, 5, 120);
+  var ocioso = clamp(document.getElementById('jornadaOcioso').value, 0, 60);
+  var pausa = clamp(document.getElementById('jornadaPausa').value, 0, 180);
+  var demanda = document.getElementById('jornadaDemanda').value;
+
+  // Ajustar ocioso baseado na demanda
+  var ociosoAjustado = ocioso;
+  if (demanda === 'baixa') ociosoAjustado = ocioso * 1.5;
+  else if (demanda === 'alta') ociosoAjustado = ocioso * 0.6;
+  else if (demanda === 'extrema') ociosoAjustado = ocioso * 0.3;
+
+  var inicioMin = timeToMinutes(inicioStr);
+  var fimMin = timeToMinutes(fimStr);
+  var totalMin = fimMin - inicioMin;
+
+  if (totalMin <= 0) {
+    showToast('Horário de término deve ser depois do início!', 'error');
+    return;
+  }
+
+  var pausaInicio, pausaFim;
+  if (pausa > 0 && pausa < totalMin) {
+    pausaInicio = inicioMin + Math.floor(totalMin / 2) - Math.floor(pausa / 2);
+    pausaFim = pausaInicio + pausa;
+    if (pausaInicio < inicioMin) { pausaInicio = inicioMin; pausaFim = pausaInicio + pausa; }
+    if (pausaFim > fimMin) { pausaFim = fimMin; pausaInicio = pausaFim - pausa; }
+    if (pausaInicio < inicioMin) { pausaInicio = inicioMin; pausa = pausaFim - pausaInicio; }
+  } else {
+    pausaInicio = inicioMin;
+    pausaFim = inicioMin;
+    pausa = 0;
+  }
+
+  var entregas = [];
+  var atual = inicioMin;
+  var numEntrega = 1;
+
+  while (atual + tempoEntrega <= fimMin) {
+    if (atual >= pausaInicio && atual < pausaFim) {
+      atual = pausaFim;
+      continue;
+    }
+    if (atual < pausaInicio && atual + tempoEntrega > pausaInicio) {
+      atual = pausaFim;
+      continue;
+    }
+    if (atual + tempoEntrega > fimMin) break;
+
+    var entregaInicio = atual;
+    var entregaFim = atual + tempoEntrega;
+    var ociosoInicio = entregaFim;
+    var ociosoFim = ociosoInicio + ociosoAjustado;
+
+    if (ociosoInicio < pausaInicio && ociosoFim > pausaInicio) {
+      ociosoFim = pausaFim + (ociosoFim - pausaInicio);
+    }
+
+    entregas.push({
+      num: numEntrega,
+      inicio: entregaInicio,
+      fim: entregaFim,
+      ociosoInicio: ociosoInicio,
+      ociosoFim: ociosoFim
+    });
+
+    numEntrega++;
+    atual = ociosoFim;
+
+    if (atual >= pausaInicio && atual < pausaFim) {
+      atual = pausaFim;
+    }
+  }
+
+  var tempoTrabalhando = entregas.length * tempoEntrega;
+  var tempoOciosoTotal = 0;
+  for (var ji = 0; ji < entregas.length; ji++) {
+    var ociosoReal = entregas[ji].ociosoFim - entregas[ji].ociosoInicio;
+    tempoOciosoTotal += ociosoReal;
+  }
+  var ultimoOciosoFim = entregas.length > 0 ? entregas[entregas.length - 1].ociosoFim : inicioMin;
+  if (ultimoOciosoFim > fimMin) {
+    tempoOciosoTotal -= (ultimoOciosoFim - fimMin);
+  }
+  if (tempoOciosoTotal < 0) tempoOciosoTotal = 0;
+
+  var valorMedio = parseNum(document.getElementById('valorMedio').value) || 12;
+  var ganhoEstimado = entregas.length * valorMedio;
+
+  document.getElementById('jornadaTotalHoras').textContent = formatDuration(totalMin);
+  document.getElementById('jornadaTotalEntregas').textContent = entregas.length;
+  document.getElementById('jornadaGanhoEstimado').textContent = formatMoney(ganhoEstimado);
+  document.getElementById('jornadaTempoTrabalhando').textContent = formatDuration(tempoTrabalhando);
+  document.getElementById('jornadaTempoOcioso').textContent = formatDuration(tempoOciosoTotal);
+  document.getElementById('jornadaTempoPausa').textContent = formatDuration(pausa);
+
+  var pctTrabalho = totalMin > 0 ? (tempoTrabalhando / totalMin) * 100 : 0;
+  var pctOcioso = totalMin > 0 ? (tempoOciosoTotal / totalMin) * 100 : 0;
+  var pctPausa = totalMin > 0 ? (pausa / totalMin) * 100 : 0;
+
+  var soma = pctTrabalho + pctOcioso + pctPausa;
+  if (soma > 0 && Math.abs(soma - 100) > 0.1) {
+    var fator = 100 / soma;
+    pctTrabalho *= fator;
+    pctOcioso *= fator;
+    pctPausa *= fator;
+  }
+  pctTrabalho = Math.max(0, pctTrabalho);
+  pctOcioso = Math.max(0, pctOcioso);
+  pctPausa = Math.max(0, pctPausa);
+
+  document.getElementById('timeBarWork').style.width = pctTrabalho + '%';
+  document.getElementById('timeBarWork').textContent = Math.round(pctTrabalho) + '% Trabalhando';
+  document.getElementById('timeBarIdle').style.width = pctOcioso + '%';
+  document.getElementById('timeBarIdle').textContent = Math.round(pctOcioso) + '% Ocioso';
+  document.getElementById('timeBarBreak').style.width = pctPausa + '%';
+  document.getElementById('timeBarBreak').textContent = Math.round(pctPausa) + '%';
+
+  document.getElementById('timeStatWork').textContent = formatDuration(tempoTrabalhando);
+  document.getElementById('timeStatIdle').textContent = formatDuration(tempoOciosoTotal);
+  document.getElementById('timeStatBreak').textContent = formatDuration(pausa);
+
+  var timelineHTML = '';
+  timelineHTML += '<div class="schedule-item">';
+  timelineHTML += '<div class="schedule-time">' + minutesToTime(inicioMin) + '</div>';
+  timelineHTML += '<div class="schedule-item-dot work"></div>';
+  timelineHTML += '<div class="schedule-content">';
+  timelineHTML += '<span class="schedule-badge work">INÍCIO</span>';
+  timelineHTML += '<div class="schedule-desc">Início da jornada</div>';
+  timelineHTML += '</div></div>';
+
+  for (var ji2 = 0; ji2 < entregas.length; ji2++) {
+    var e = entregas[ji2];
+    timelineHTML += '<div class="schedule-item">';
+    timelineHTML += '<div class="schedule-time">' + minutesToTime(e.inicio) + '</div>';
+    timelineHTML += '<div class="schedule-item-dot work"></div>';
+    timelineHTML += '<div class="schedule-content">';
+    timelineHTML += '<span class="schedule-badge work">ENTREGA #' + e.num + '</span>';
+    timelineHTML += '<div class="schedule-desc">Trabalhando</div>';
+    timelineHTML += '<div class="schedule-duration">' + formatDuration(e.fim - e.inicio) + '</div>';
+    timelineHTML += '</div></div>';
+
+    if (ji2 < entregas.length - 1) {
+      var ociosoDur = e.ociosoFim - e.ociosoInicio;
+      timelineHTML += '<div class="schedule-item">';
+      timelineHTML += '<div class="schedule-time">' + minutesToTime(e.fim) + '</div>';
+      timelineHTML += '<div class="schedule-item-dot idle"></div>';
+      timelineHTML += '<div class="schedule-content">';
+      timelineHTML += '<span class="schedule-badge idle">OCIOSO</span>';
+      timelineHTML += '<div class="schedule-desc">Aguardando próxima entrega</div>';
+      timelineHTML += '<div class="schedule-duration">' + formatDuration(ociosoDur) + '</div>';
+      timelineHTML += '</div></div>';
+    }
+
+    if (e.fim <= pausaInicio && ji2 < entregas.length - 1 && entregas[ji2 + 1].inicio >= pausaFim) {
+      timelineHTML += '<div class="schedule-item">';
+      timelineHTML += '<div class="schedule-time">' + minutesToTime(pausaInicio) + '</div>';
+      timelineHTML += '<div class="schedule-item-dot break"></div>';
+      timelineHTML += '<div class="schedule-content">';
+      timelineHTML += '<span class="schedule-badge break">PAUSA</span>';
+      timelineHTML += '<div class="schedule-desc">Almoço / lanche</div>';
+      timelineHTML += '<div class="schedule-duration">' + formatDuration(pausa) + '</div>';
+      timelineHTML += '</div></div>';
+    }
+  }
+
+  if (entregas.length > 0) {
+    var ultimoFim = entregas[entregas.length - 1].fim;
+    timelineHTML += '<div class="schedule-item">';
+    timelineHTML += '<div class="schedule-time">' + minutesToTime(ultimoFim) + '</div>';
+    timelineHTML += '<div class="schedule-item-dot work"></div>';
+    timelineHTML += '<div class="schedule-content">';
+    timelineHTML += '<span class="schedule-badge work">FIM</span>';
+    timelineHTML += '<div class="schedule-desc">Término da jornada</div>';
+    timelineHTML += '</div></div>';
+  } else {
+    timelineHTML += '<div class="schedule-item">';
+    timelineHTML += '<div class="schedule-time">' + minutesToTime(fimMin) + '</div>';
+    timelineHTML += '<div class="schedule-item-dot work"></div>';
+    timelineHTML += '<div class="schedule-content">';
+    timelineHTML += '<span class="schedule-badge work">FIM</span>';
+    timelineHTML += '<div class="schedule-desc">Término da jornada</div>';
+    timelineHTML += '</div></div>';
+  }
+
+  document.getElementById('scheduleTimeline').innerHTML = timelineHTML;
+}
+
+// ==================== ESTATISTICAS ====================
+function atualizarEstatisticas() {
+  if (historico.length === 0) {
+    document.getElementById('trendSvg').innerHTML = '<text x="50" y="50" text-anchor="middle" fill="var(--text-tertiary)" font-size="10">Sem dados suficientes</text>';
+    document.getElementById('heatmapContainer').innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-tertiary);font-size:13px;">Analise corridas para ver estatísticas</div>';
+    return;
+  }
+
+  // Tendência de ganhos
+  var ultimas = historico.slice(0, Math.min(30, historico.length)).reverse();
+  var maxVal = 0;
+  for (var i = 0; i < ultimas.length; i++) {
+    if (ultimas[i].valor > maxVal) maxVal = ultimas[i].valor;
+  }
+  maxVal = Math.max(maxVal, 1);
+
+  var points = '';
+  var areaPoints = '';
+  var stepX = 100 / (ultimas.length - 1 || 1);
+  for (var i = 0; i < ultimas.length; i++) {
+    var x = i * stepX;
+    var y = 100 - ((ultimas[i].valor / maxVal) * 80 + 10);
+    points += x + ',' + y + ' ';
+    if (i === 0) areaPoints = x + ',100 ';
+    areaPoints += x + ',' + y + ' ';
+    if (i === ultimas.length - 1) areaPoints += x + ',100';
+  }
+
+  document.getElementById('trendLine').setAttribute('points', points);
+  document.getElementById('trendArea').setAttribute('points', areaPoints);
+
+  // Eixos
+  var axisY = document.getElementById('trendAxisY');
+  axisY.innerHTML = '';
+  for (var i = 4; i >= 0; i--) {
+    var val = (maxVal / 4) * i;
+    axisY.innerHTML += '<span>R$' + Math.round(val) + '</span>';
+  }
+
+  var axisX = document.getElementById('trendAxisX');
+  axisX.innerHTML = '';
+  var labelsCount = Math.min(5, ultimas.length);
+  for (var i = 0; i < labelsCount; i++) {
+    var idx = Math.floor((ultimas.length - 1) * (i / (labelsCount - 1)));
+    var data = ultimas[idx].data.split(' ')[0];
+    axisX.innerHTML += '<span>' + data + '</span>';
+  }
+
+  // Mapa de calor
+  var heatmapData = {};
+  for (var i = 0; i < 7; i++) {
+    heatmapData[i] = {};
+    for (var h = 0; h < 24; h++) {
+      heatmapData[i][h] = { count: 0, total: 0 };
+    }
+  }
+
+  for (var i = 0; i < historico.length; i++) {
+    var c = historico[i];
+    var d = new Date(c.data);
+    var dia = d.getDay();
+    var hora = d.getHours();
+    if (heatmapData[dia] && heatmapData[dia][hora]) {
+      heatmapData[dia][hora].count++;
+      heatmapData[dia][hora].total += parseNum(c.valor);
+    }
+  }
+
+  var heatmapHTML = '';
+  for (var h = 8; h < 24; h += 2) {
+    for (var d = 0; d < 7; d++) {
+      var cell = heatmapData[d][h];
+      var media = cell.count > 0 ? cell.total / cell.count : 0;
+      var intensity = Math.min(1, media / 25);
+      var r = Math.round(52 + (211 - 52) * intensity);
+      var g = Math.round(211 + (153 - 211) * intensity);
+      var b = Math.round(153 + (153 - 153) * intensity);
+      var bg = 'rgba(' + r + ',' + g + ',' + b + ',' + (0.2 + intensity * 0.8) + ')';
+      var color = intensity > 0.5 ? '#fff' : 'var(--text-primary)';
+      heatmapHTML += '<div class="heatmap-cell" style="background:' + bg + ';color:' + color + '">' + (cell.count > 0 ? 'R$' + Math.round(media) : '') + '<div class="tooltip">' + ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d] + ' ' + h + 'h: ' + cell.count + ' entregas, média R$' + media.toFixed(2) + '</div></div>';
+    }
+  }
+  document.getElementById('heatmapContainer').innerHTML = heatmapHTML;
+
+  // Estatísticas por plataforma
+  var plataformas = {};
+  for (var i = 0; i < historico.length; i++) {
+    var p = historico[i].plataforma || 'ifood';
+    if (!plataformas[p]) plataformas[p] = { total: 0, count: 0 };
+    plataformas[p].total += parseNum(historico[i].valor);
+    plataformas[p].count++;
+  }
+
+  var platHTML = '';
+  var platNames = { ifood: 'iFood', rappi: 'Rappi', uber: 'Uber Eats', '99': '99 Food', outro: 'Outro' };
+  for (var p in plataformas) {
+    platHTML += '<div class="metric-card"><div class="metric-value">' + (platNames[p] || p) + '</div><div class="metric-label">' + formatMoney(plataformas[p].total) + ' total</div><div class="metric-sub">' + plataformas[p].count + ' entregas</div></div>';
+  }
+  if (platHTML === '') platHTML = '<div class="metric-card"><div class="metric-value">-</div><div class="metric-label">Sem dados</div></div>';
+  document.getElementById('plataformaStats').innerHTML = platHTML;
+
+  // Estatísticas gerais
+  var total = historico.length;
+  var somaValores = 0;
+  var aceitesCount = 0;
+  var melhorDia = 0;
+  var piorDia = 999999;
+  var distTotal = 0;
+  var tempoTotal = 0;
+
+  for (var i = 0; i < historico.length; i++) {
+    var v = parseNum(historico[i].valor);
+    somaValores += v;
+    if (historico[i].aceita) aceitesCount++;
+    if (v > melhorDia) melhorDia = v;
+    if (v < piorDia) piorDia = v;
+    distTotal += parseNum(historico[i].distTotal);
+    tempoTotal += parseNum(historico[i].tempoReal);
+  }
+
+  var media = total > 0 ? somaValores / total : 0;
+  var aceitas = total > 0 ? (aceitesCount / total) * 100 : 0;
+  var mediaHora = tempoTotal > 0 ? (somaValores / tempoTotal) * 60 : 0;
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statMedia').textContent = formatMoney(media);
+  document.getElementById('statTotalGanho').textContent = formatMoney(somaValores);
+  document.getElementById('statAceitas').textContent = aceitas.toFixed(0) + '%';
+  document.getElementById('statMelhorDia').textContent = formatMoney(melhorDia);
+  document.getElementById('statPiorDia').textContent = formatMoney(piorDia);
+  document.getElementById('statMediaHora').textContent = formatMoney(mediaHora);
+  document.getElementById('statDistTotal').textContent = distTotal.toFixed(1).replace('.',',') + ' km';
+}
+
+// ==================== HISTORICO ====================
+function renderizarHistorico() {
+  // Atualizar badge no menu
+  var badge = document.getElementById('menuBadgeHist');
+  if (badge) {
+    if (historico.length > 0) {
+      badge.textContent = historico.length;
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  var container = document.getElementById('historyContainer');
+  if(historico.length === 0) {
+    container.innerHTML = '<div class="history-empty"><div class="history-empty-icon">&#128203;</div><div>Nenhuma corrida salva ainda.</div><div style="font-size:13px; margin-top:4px;">Analise uma corrida e clique em "Salvar no histórico".</div></div>';
+  } else {
+    var html = '<table class="history-table"><thead><tr><th>Data</th><th>Valor</th><th>Dist.</th><th>Tempo</th><th>Score</th><th>Veredito</th></tr></thead><tbody>';
+    for (var hi = 0; hi < historico.length; hi++) {
+      var c = historico[hi];
+      var badgeClass = c.score >= 70 ? 'badge-pos' : (c.score >= 45 ? 'badge-warn' : 'badge-neg');
+      var badgeText = c.score >= 70 ? 'Aceitar' : (c.score >= 45 ? 'Avaliar' : 'Recusar');
+      var dataPartes = String(c.data).split(' ');
+      var dataStr = dataPartes[0] || '';
+      var horaStr = dataPartes[1] || '';
+      html += '<tr>' +
+        '<td class="col-hora">' + dataStr + '<br><span style="color:var(--text-quaternary);font-size:11px;">' + horaStr + '</span></td>' +
+        '<td class="col-valor">R$ ' + parseNum(c.valor).toFixed(2).replace('.',',') + '</td>' +
+        '<td>' + parseNum(c.distTotal).toFixed(1).replace('.',',') + ' km</td>' +
+        '<td>' + parseNum(c.tempoReal) + ' min</td>' +
+        '<td>' + parseNum(c.score) + '/100</td>' +
+        '<td><span class="badge ' + badgeClass + '">' + badgeText + '</span></td>' +
+        '</tr>';
+    }
+    html += '</tbody></table>';
+    container.innerHTML = html;
+  }
+}
+
+function exportarJSON() {
+  var data = { exportado: getNow(), historico: historico, entregasHoje: entregasHoje, metaConfig: metaConfig };
+  var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'darkstore_historico_' + getTodayKey() + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('JSON exportado!');
+}
+
+function exportarCSV() {
+  var csv = 'Data,Valor,Distancia Ida,Distancia Volta,Distancia Total,Tempo Estimado,Tempo Real,Subida,Semaforo,Chuva,Pico,Distante,Gorjeta,Risco,Score,Ganho Hora,Eficiencia,Custo Comb,Lucro,Gorjeta Est,Plataforma,Aceita\n';
+  for (var hi = 0; hi < historico.length; hi++) {
+    var c = historico[hi];
+    csv += '"' + c.data + '",' + c.valor + ',' + c.distIda + ',' + c.distVolta + ',' + c.distTotal + ',' + c.tempoEst + ',' + c.tempoReal + ',' + c.subida + ',' + c.semaforo + ',' + c.chuva + ',' + c.pico + ',' + c.distante + ',' + c.gorjeta + ',' + c.risco + ',' + c.score + ',' + parseNum(c.ganhoHora).toFixed(2) + ',' + parseNum(c.efic).toFixed(2) + ',' + parseNum(c.custoComb).toFixed(2) + ',' + parseNum(c.lucro).toFixed(2) + ',' + parseNum(c.gorjetaEst).toFixed(2) + ',' + (c.plataforma||'ifood') + ',' + c.aceita + '\n';
+  }
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'darkstore_historico_' + getTodayKey() + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSV exportado!');
+}
+
+function limparHistorico() {
+  if(!confirm('Tem certeza que deseja apagar TODO o histórico? Esta ação não pode ser desfeita.')) return;
+  historico = [];
+  entregasHoje = [];
+  try {
+    localStorage.removeItem('darkstore_historico');
+    localStorage.removeItem('darkstore_hoje');
+  } catch(e) {}
+  renderizarHistorico();
+  atualizarMeta();
+  showToast('Histórico limpo!');
+}
+
+function importarJSON() {
+  document.getElementById('importFile').click();
+}
+
+function processarImportacao(event) {
+  var file = event.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var data = JSON.parse(e.target.result);
+      if(data.historico) {
+        historico = data.historico;
+        try { localStorage.setItem('darkstore_historico', JSON.stringify(historico)); } catch(e) {}
+      }
+      if(data.entregasHoje) {
+        entregasHoje = data.entregasHoje;
+        try { localStorage.setItem('darkstore_hoje', JSON.stringify(entregasHoje)); } catch(e) {}
+      }
+      if(data.metaConfig) {
+        metaConfig = data.metaConfig;
+        try { localStorage.setItem('darkstore_meta', JSON.stringify(metaConfig)); } catch(e) {}
+      }
+      renderizarHistorico();
+      atualizarMeta();
+      showToast('Dados importados com sucesso!');
+    } catch(err) {
+      showToast('Erro ao importar arquivo JSON!', 'error');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', function() {
+  initStorage();
+  calcular();
+  calcularProjecoes();
+  atualizarMeta();
+  gerarJornada();
+  atualizarComparacao();
+
+  // Sincronizar badge do histórico no menu
+  if (historico.length > 0) {
+    var badge = document.getElementById('menuBadgeHist');
+    if (badge) {
+      badge.textContent = historico.length;
+      badge.style.display = 'flex';
+    }
+  }
+});
+</script>
+
+</body>
+</html>
