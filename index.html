@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DarkStore AI Ultra</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+  font-family: system-ui, sans-serif; 
+  background: #050508; 
+  color: #f0f0f8; 
+  min-height: 100vh;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+body.light-mode { background: #f5f5f8; color: #1a1a2e; }
+body.light-mode .navbar { background: rgba(255,255,255,0.85); border-bottom: 1px solid #d1d1e0; }
+body.light-mode .navbar-btn { background: #f0f0f5; color: #555; border: 1px solid #d1d1e0; }
+body.light-mode .navbar-btn:hover { background: #e8e8f0; color: #1a1a2e; }
+body.light-mode .card { background: #fff; border: 1px solid #d1d1e0; }
+body.light-mode .field input { background: #f5f5f8; color: #1a1a2e; border: 1px solid #d1d1e0; }
+body.light-mode .quick-action-btn { background: #f0f0f5; color: #555; border: 1px solid #d1d1e0; }
+body.light-mode .quick-action-btn:hover { background: #e8e8f0; color: #1a1a2e; }
+body.light-mode .menu-drawer { background: #fff; border-left: 1px solid #d1d1e0; }
+body.light-mode .menu-item { color: #555; }
+body.light-mode .menu-item:hover { background: #f0f0f5; color: #1a1a2e; }
+body.light-mode .menu-drawer-close { background: #f0f0f5; color: #555; }
+body.light-mode .ai-chat-container { background: #fff; border: 1px solid #d1d1e0; }
+body.light-mode .ai-chat-input { background: #f5f5f8; color: #1a1a2e; border: 1px solid #d1d1e0; }
+body.light-mode .ai-chat-message.ai { background: #f0f0f5; border: 1px solid #d1d1e0; color: #555; }
+body.light-mode .modal { background: #fff; border: 1px solid #d1d1e0; }
+body.light-mode .modal-close { background: #f0f0f5; color: #555; }
+body.light-mode .toast { background: #fff; color: #1a1a2e; border: 1px solid #d1d1e0; }
+body.light-mode #currentSection { background: #fff; border: 1px solid #d1d1e0; }
+body.light-mode .toggle-row { border-bottom: 1px solid #d1d1e0; }
+body.light-mode .detail-row { border-bottom: 1px dashed #d1d1e0; }
+body.light-mode .score-bar { background: #e8e8f0; }
+body.light-mode .slider { background: #d1d1e0; }
+body.light-mode .btn-secondary { background: #f0f0f5; color: #1a1a2e; border: 1px solid #d1d1e0; }
+body.light-mode .ai-chat-header { background: rgba(99,102,241,0.08); }
+body.light-mode .ai-chat-input-area { border-top: 1px solid #d1d1e0; }
+body.light-mode .menu-overlay { background: rgba(0,0,0,0.4); }
+body.light-mode .modal-overlay { background: rgba(0,0,0,0.5); }
+body.light-mode #historyContainer table th { color: #888; border-bottom: 1px solid #d1d1e0; }
+body.light-mode #historyContainer table td { border-bottom: 1px solid #d1d1e0; color: #555; }
+body.light-mode #historyContainer { color: #888; }
+body.light-mode .verdict-sub { color: #888; }
+body.light-mode .detail-val { color: #1a1a2e; }
+body.light-mode .field label { color: #888; }
+body.light-mode .card-title { color: #1a1a2e; }
+body.light-mode .toggle-label { color: #1a1a2e; }
+body.light-mode #compCard1, body.light-mode #compCard2 { background: #f0f0f5; border: 1px solid #d1d1e0; }
+body.light-mode #panel-previsao .card > div > div { background: #f0f0f5; border: 1px solid #d1d1e0; }
+body.light-mode #panel-meta .card > div:last-child { background: #f0f0f5; }
+
+.container { max-width: 900px; margin: 0 auto; padding: 16px; }
+
+.navbar { 
+  display: flex; align-items: center; justify-content: space-between; 
+  padding: 12px 16px; background: rgba(20,20,30,0.7); 
+  border-bottom: 1px solid #2a2a3a; position: sticky; top: 0; z-index: 100;
+  backdrop-filter: blur(20px); transition: background 0.3s ease;
+}
+.navbar-brand { display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 800; }
+.navbar-title { background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.navbar-actions { display: flex; gap: 6px; }
+.navbar-btn { 
+  width: 40px; height: 40px; border-radius: 10px; border: 1px solid #2a2a3a; 
+  background: #15151e; color: #a0a0b8; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;
+}
+.navbar-btn:hover { background: #1e1e2a; color: #f0f0f8; }
+
+.menu-overlay { 
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+  background: rgba(0,0,0,0.6); z-index: 1500; display: none;
+}
+.menu-overlay.show { display: block; }
+.menu-drawer { 
+  position: fixed; top: 0; right: 0; bottom: 0; width: 320px; 
+  background: #0e0e14; border-left: 1px solid #2a2a3a; z-index: 1600;
+  transform: translateX(100%); transition: transform 0.35s ease;
+  display: flex; flex-direction: column;
+}
+.menu-drawer.show { transform: translateX(0); }
+.menu-drawer-header { 
+  display: flex; align-items: center; justify-content: space-between; 
+  padding: 20px; border-bottom: 1px solid #2a2a3a;
+}
+.menu-drawer-title { font-size: 16px; font-weight: 700; }
+.menu-drawer-close { 
+  width: 32px; height: 32px; border-radius: 10px; border: none; 
+  background: #15151e; color: #a0a0b8; font-size: 20px; cursor: pointer;
+}
+.menu-item { 
+  display: flex; align-items: center; gap: 12px; width: 100%; 
+  padding: 14px 16px; border: none; background: transparent; 
+  color: #a0a0b8; font-size: 14px; cursor: pointer; text-align: left;
+  transition: all 0.2s ease;
+}
+.menu-item:hover { background: #15151e; color: #f0f0f8; }
+.menu-item.active { background: rgba(99,102,241,0.15); color: #6366f1; }
+body.light-mode .menu-item.active { background: rgba(99,102,241,0.1); color: #6366f1; }
+
+.card { 
+  background: #0e0e14; border: 1px solid #2a2a3a; border-radius: 18px; 
+  padding: 24px; margin-bottom: 14px;
+}
+.card-title { font-size: 16px; font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+
+.verdict-card { border-radius: 18px; padding: 32px 24px; text-align: center; margin-bottom: 16px; transition: all 0.4s ease; }
+.verdict-yes { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.35); }
+.verdict-no { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.35); }
+.verdict-maybe { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.35); }
+.verdict-icon { font-size: 48px; margin-bottom: 12px; }
+.verdict-text { font-size: 24px; font-weight: 800; }
+.verdict-sub { font-size: 14px; color: #a0a0b8; margin-top: 8px; }
+.score-bar { height: 10px; border-radius: 5px; background: #15151e; overflow: hidden; margin: 18px 0 8px; }
+.score-fill { height: 100%; border-radius: 5px; transition: width 0.8s ease, background 0.4s ease; }
+
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 11px; color: #a0a0b8; margin-bottom: 6px; font-weight: 600; text-transform: uppercase; }
+.field input { 
+  width: 100%; padding: 13px 16px; border: 1px solid #2a2a3a; border-radius: 10px; 
+  font-size: 15px; background: #15151e; color: #f0f0f8; transition: border-color 0.2s ease;
+}
+.field input:focus { outline: none; border-color: #6366f1; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #2a2a3a; }
+.toggle-row:last-child { border-bottom: none; }
+.toggle-label { font-size: 14px; font-weight: 600; }
+.switch { position: relative; width: 50px; height: 28px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { 
+  position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; 
+  background: #2a2a3a; border-radius: 28px; transition: 0.25s;
+}
+.slider:before { 
+  position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px; 
+  background: #f0f0f8; border-radius: 50%; transition: 0.25s;
+}
+input:checked + .slider { background: #10b981; }
+input:checked + .slider:before { transform: translateX(22px); }
+
+.btn { 
+  padding: 14px 18px; border-radius: 10px; border: none; 
+  background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; 
+  font-size: 14px; font-weight: 700; cursor: pointer; width: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.btn:hover { transform: translateY(-2px); opacity: 0.9; }
+.btn-group { display: flex; gap: 8px; }
+.btn-group .btn { flex: 1; }
+.btn-success { background: linear-gradient(135deg, #10b981, #059669); }
+.btn-secondary { background: #15151e; color: #f0f0f8; border: 1px solid #2a2a3a; }
+.btn-purple { background: linear-gradient(135deg, #a855f7, #7c3aed); }
+
+.quick-actions { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0; margin-bottom: 14px; }
+.quick-action-btn { 
+  flex-shrink: 0; padding: 8px 16px; border-radius: 14px; border: 1px solid #2a2a3a; 
+  background: #15151e; color: #a0a0b8; font-size: 12px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s ease;
+}
+.quick-action-btn:hover { background: #1e1e2a; color: #f0f0f8; border-color: #6366f1; }
+.quick-action-btn.active { background: rgba(99,102,241,0.2); color: #6366f1; border-color: #6366f1; }
+
+.detail-row { display: flex; justify-content: space-between; padding: 11px 0; font-size: 14px; border-bottom: 1px dashed #2a2a3a; }
+.detail-row:last-child { border-bottom: none; }
+.detail-val { font-weight: 700; }
+
+.ai-chat-fab { 
+  position: fixed; bottom: 24px; right: 16px; width: 56px; height: 56px; 
+  border-radius: 50%; border: none; background: linear-gradient(135deg, #6366f1, #a855f7); 
+  color: #fff; font-size: 24px; cursor: pointer; z-index: 900;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 15px rgba(99,102,241,0.4); transition: transform 0.2s ease;
+}
+.ai-chat-fab:hover { transform: scale(1.05); }
+.ai-chat-container { 
+  position: fixed; bottom: 90px; right: 16px; width: 360px; max-width: calc(100vw - 32px); 
+  background: #0e0e14; border: 1px solid #2a2a3a; border-radius: 24px; 
+  z-index: 900; display: none; flex-direction: column; overflow: hidden;
+  max-height: 500px; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.ai-chat-container.show { display: flex; }
+.ai-chat-header { 
+  padding: 16px 20px; background: rgba(99,102,241,0.15); 
+  border-bottom: 1px solid #2a2a3a; display: flex; justify-content: space-between; align-items: center;
+}
+.ai-chat-title { font-size: 14px; font-weight: 700; color: #6366f1; }
+.ai-chat-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; max-height: 350px; }
+.ai-chat-message { padding: 10px 14px; border-radius: 14px; font-size: 13px; line-height: 1.6; max-width: 85%; }
+.ai-chat-message.ai { background: #15151e; border: 1px solid #2a2a3a; color: #a0a0b8; align-self: flex-start; }
+.ai-chat-message.user { background: linear-gradient(135deg, #6366f1, #a855f7); color: #fff; align-self: flex-end; }
+.ai-chat-input-area { padding: 12px 16px; border-top: 1px solid #2a2a3a; display: flex; gap: 8px; }
+.ai-chat-input { 
+  flex: 1; padding: 10px 14px; border: 1px solid #2a2a3a; border-radius: 14px; 
+  background: #15151e; color: #f0f0f8; font-size: 13px;
+}
+.ai-chat-input:focus { outline: none; border-color: #6366f1; }
+.ai-chat-send { 
+  width: 40px; height: 40px; border-radius: 50%; border: none; 
+  background: linear-gradient(135deg, #6366f1, #a855f7); color: #fff; 
+  font-size: 16px; cursor: pointer; transition: transform 0.2s ease;
+}
+.ai-chat-send:hover { transform: scale(1.1); }
+
+.ai-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 10px; }
+.ai-chip {
+  padding: 6px 12px; border-radius: 12px; border: 1px solid #2a2a3a;
+  background: #15151e; color: #818cf8; font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s ease;
+}
+.ai-chip:hover { border-color: #6366f1; background: rgba(99,102,241,0.15); color: #a5b4fc; }
+body.light-mode .ai-chip { background: #f0f0f5; color: #6366f1; border-color: #d1d1e0; }
+body.light-mode .ai-chip:hover { background: #e8e8f0; }
+.ai-chat-message.ai b { color: #c7c9e8; }
+body.light-mode .ai-chat-message.ai b { color: #1a1a2e; }
+
+.tab-panel { display: none; }
+.tab-panel.tab-active { display: block; animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.toast { 
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); 
+  background: #15151e; color: #f0f0f8; padding: 14px 28px; border-radius: 18px; 
+  border: 1px solid #2a2a3a; font-size: 14px; font-weight: 600; z-index: 1000; 
+  opacity: 0; transition: all 0.3s ease;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+.modal-overlay { 
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+  background: rgba(0,0,0,0.7); z-index: 2000; display: none; 
+  align-items: center; justify-content: center; padding: 16px;
+}
+.modal-overlay.show { display: flex; }
+.modal { 
+  background: #0e0e14; border: 1px solid #2a2a3a; border-radius: 24px; 
+  max-width: 520px; width: 100%; max-height: 90vh; overflow-y: auto;
+}
+.modal-header { padding: 24px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+.modal-title { font-size: 18px; font-weight: 800; }
+.modal-close { 
+  width: 36px; height: 36px; border-radius: 10px; border: none; 
+  background: #15151e; color: #a0a0b8; font-size: 20px; cursor: pointer;
+}
+.modal-body { padding: 24px; }
+.modal-footer { padding: 0 24px 24px; }
+
+.voice-btn {
+  width: 40px; height: 40px; border-radius: 50%; border: none;
+  background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff;
+  font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease; flex-shrink: 0;
+}
+.voice-btn:hover { transform: scale(1.1); }
+.voice-btn.recording { animation: pulseRed 1.5s infinite; }
+@keyframes pulseRed {
+  0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(239,68,68,0); }
+  100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+}
+
+.ai-typing { display: flex; gap: 4px; padding: 10px 14px; }
+.ai-typing span { width: 6px; height: 6px; background: #6366f1; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
+.ai-typing span:nth-child(1) { animation-delay: -0.32s; }
+.ai-typing span:nth-child(2) { animation-delay: -0.16s; }
+@keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+.voice-toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; background: rgba(99,102,241,0.1); border-radius: 10px;
+  margin-bottom: 12px;
+}
+.voice-toggle-label { font-size: 13px; font-weight: 600; }
+
+@media (max-width: 600px) {
+  .container { padding: 12px; }
+  .grid-2 { grid-template-columns: 1fr; }
+  .menu-drawer { width: 280px; }
+  .ai-chat-container { width: calc(100vw - 24px); right: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="navbar">
+  <div class="navbar-brand">
+    <span style="font-size:24px">&#128640;</span>
+    <span class="navbar-title">DarkStore AI Ultra</span>
+  </div>
+  <div class="navbar-actions">
+    <button class="navbar-btn" id="btnTheme" title="Alternar tema">&#127769;</button>
+    <button class="navbar-btn" id="btnNotif" title="Notificacoes">&#128276;</button>
+    <button class="navbar-btn" id="btnMenu" title="Menu">&#9776;</button>
+  </div>
+</div>
+
+<div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);border-radius:14px;margin-bottom:16px;font-size:12px;color:#818cf8;font-weight:500;">
+  <div style="width:8px;height:8px;background:#10b981;border-radius:50%;animation:pulse 2s infinite"></div>
+  <span>IA Neural Ativa</span>
+  <span style="background:rgba(99,102,241,0.2);color:#6366f1;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700">v4.0</span>
+</div>
+
+<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 16px;background:#15151e;border:1px solid #2a2a3a;border-radius:14px;margin-bottom:16px;font-size:14px;font-weight:600;text-align:center;" id="currentSection">
+  <span id="currentIcon">&#129504;</span>
+  <span id="currentText">Analisar com IA</span>
+</div>
+
+<div class="menu-overlay" id="menuOverlay"></div>
+<div class="menu-drawer" id="menuDrawer">
+  <div class="menu-drawer-header">
+    <span class="menu-drawer-title">&#128640; Menu</span>
+    <button class="menu-drawer-close" id="btnCloseMenu">&times;</button>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:8px;">
+    <button class="menu-item active" data-tab="analisar" id="menuAnalisar">
+      <span style="font-size:20px;width:28px;text-align:center">&#129504;</span>
+      <span style="flex:1">Analisar com IA</span>
+    </button>
+    <button class="menu-item" data-tab="comparar" id="menuComparar">
+      <span style="font-size:20px;width:28px;text-align:center">&#9878;</span>
+      <span style="flex:1">Comparar Corridas</span>
+    </button>
+    <button class="menu-item" data-tab="previsao" id="menuPrevisao">
+      <span style="font-size:20px;width:28px;text-align:center">&#128302;</span>
+      <span style="flex:1">Previsao de Demanda</span>
+    </button>
+    <button class="menu-item" data-tab="meta" id="menuMeta">
+      <span style="font-size:20px;width:28px;text-align:center">&#127919;</span>
+      <span style="flex:1">Meta Diaria</span>
+    </button>
+    <button class="menu-item" data-tab="historico" id="menuHistorico">
+      <span style="font-size:20px;width:28px;text-align:center">&#128203;</span>
+      <span style="flex:1">Historico</span>
+    </button>
+    <div style="border-top:1px solid #2a2a3a;margin:8px 0;"></div>
+    <button class="menu-item" id="menuVoice" title="Comandos de voz">
+      <span style="font-size:20px;width:28px;text-align:center">&#127908;</span>
+      <span style="flex:1">Comandos de Voz</span>
+    </button>
+    <button class="menu-item" id="menuExport" title="Exportar dados">
+      <span style="font-size:20px;width:28px;text-align:center">&#128229;</span>
+      <span style="flex:1">Exportar Dados</span>
+    </button>
+    <button class="menu-item" id="menuHelp">
+      <span style="font-size:20px;width:28px;text-align:center">&#10067;</span>
+      <span style="flex:1">Ajuda / Tutorial</span>
+    </button>
+  </div>
+  <div style="padding:16px;border-top:1px solid #2a2a3a;font-size:12px;color:#6e6e8a;text-align:center;">
+    DarkStore AI Ultra v4.0
+  </div>
+</div>
+
+<div id="panel-analisar" class="tab-panel tab-active">
+  <div class="verdict-card verdict-yes" id="verdictBox">
+    <div class="verdict-icon" id="verdictIcon">&#9989;</div>
+    <div class="verdict-text" id="verdictText">Vale a pena aceitar!</div>
+    <div class="verdict-sub" id="verdictSub">Score Neural: 78/100</div>
+    <div class="score-bar"><div class="score-fill" id="scoreFill" style="width:78%;background:linear-gradient(90deg,#10b981,#34d399);"></div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128221; Dados da corrida</div>
+    <div class="quick-actions">
+      <button class="quick-action-btn" data-preset="curta">Curta (R$8-12)</button>
+      <button class="quick-action-btn" data-preset="media">Media (R$12-20)</button>
+      <button class="quick-action-btn" data-preset="longa">Longa (R$20+)</button>
+      <button class="quick-action-btn" data-preset="pico">Pico</button>
+      <button class="quick-action-btn" data-preset="chuva">Chuva</button>
+      <button class="quick-action-btn" data-preset="premium">Premium</button>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>Valor (R$)</label><input type="number" id="valor" value="12.50" step="0.50"></div>
+      <div class="field"><label>Distancia ida (km)</label><input type="number" id="distIda" value="3.2" step="0.1"></div>
+      <div class="field"><label>Distancia volta (km)</label><input type="number" id="distVolta" value="3.2" step="0.1"></div>
+      <div class="field"><label>Tempo estimado (min)</label><input type="number" id="tempoEst" value="18" step="1"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128737; Fatores de risco</div>
+    <div class="toggle-row"><div><div class="toggle-label">Subida ingreme?</div></div><label class="switch"><input type="checkbox" id="subida"><span class="slider"></span></label></div>
+    <div class="toggle-row"><div><div class="toggle-label">Muitos semaforos?</div></div><label class="switch"><input type="checkbox" id="semaforo"><span class="slider"></span></label></div>
+    <div class="toggle-row"><div><div class="toggle-label">Chovendo?</div></div><label class="switch"><input type="checkbox" id="chuva"><span class="slider"></span></label></div>
+    <div class="toggle-row"><div><div class="toggle-label">Horario de pico?</div></div><label class="switch"><input type="checkbox" id="pico"><span class="slider"></span></label></div>
+    <div class="toggle-row"><div><div class="toggle-label">Cliente distante?</div></div><label class="switch"><input type="checkbox" id="distante"><span class="slider"></span></label></div>
+    <div class="toggle-row"><div><div class="toggle-label">Gorjeta?</div></div><label class="switch"><input type="checkbox" id="gorjeta"><span class="slider"></span></label></div>
+    <div class="toggle-row"><div><div class="toggle-label">Zona de risco?</div></div><label class="switch"><input type="checkbox" id="risco"><span class="slider"></span></label></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128202; Analise Detalhada</div>
+    <div id="detalhesAnalise">
+      <div class="detail-row"><span>Valor bruto</span><span class="detail-val" id="dValor">R$ 12,50</span></div>
+      <div class="detail-row"><span>Tempo total</span><span class="detail-val" id="dTempo">23 min</span></div>
+      <div class="detail-row"><span>Distancia total</span><span class="detail-val" id="dDist">6,4 km</span></div>
+      <div class="detail-row"><span>Ganho/hora</span><span class="detail-val" id="dGanhoHora">R$ 32,61</span></div>
+      <div class="detail-row"><span>Lucro liquido</span><span class="detail-val" id="dLucro">R$ 10,58</span></div>
+      <div class="detail-row"><span>Lucro/km</span><span class="detail-val" id="dLucroKm">R$ 1,65</span></div>
+      <div class="detail-row"><span>Recomendacao IA</span><span class="detail-val" id="dRecomendacao" style="color:#10b981;">Aceitar</span></div>
+    </div>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn btn-success" id="btnSalvar">Salvar</button>
+    <button class="btn btn-secondary" id="btnLimpar">Limpar</button>
+  </div>
+</div>
+
+<div id="panel-comparar" class="tab-panel">
+  <div class="card">
+    <div class="card-title">&#9878; Comparar Corridas</div>
+    <div style="display:flex;gap:12px;margin-top:12px;">
+      <div style="flex:1;background:#15151e;border:1px solid #2a2a3a;border-radius:10px;padding:18px;text-align:center;" id="compCard1">
+        <div style="font-size:12px;font-weight:700;margin-bottom:8px;">Corrida A</div>
+        <div style="font-size:22px;font-weight:800;" id="compValor1">R$ 12,50</div>
+        <div style="font-size:11px;color:#6e6e8a;margin-top:4px;" id="compDetalhes1">6,4 km . 23 min</div>
+        <div style="margin-top:8px;font-size:24px;font-weight:800;color:#6366f1;" id="compScore1">78</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#6e6e8a;">VS</div>
+      <div style="flex:1;background:#15151e;border:1px solid #2a2a3a;border-radius:10px;padding:18px;text-align:center;" id="compCard2">
+        <div style="font-size:12px;font-weight:700;margin-bottom:8px;">Corrida B</div>
+        <div style="font-size:22px;font-weight:800;" id="compValor2">R$ 15,00</div>
+        <div style="font-size:11px;color:#6e6e8a;margin-top:4px;" id="compDetalhes2">5,0 km . 20 min</div>
+        <div style="margin-top:8px;font-size:24px;font-weight:800;color:#6366f1;" id="compScore2">85</div>
+      </div>
+    </div>
+    <div style="margin-top:16px;padding:12px;background:rgba(99,102,241,0.1);border-radius:10px;text-align:center;font-size:14px;font-weight:600;" id="compWinner">
+      <span style="color:#a855f7;">Corrida B</span> e a melhor escolha! (+7 pontos)
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128221; Dados da Corrida A</div>
+    <div class="grid-2">
+      <div class="field"><label>Valor A (R$)</label><input type="number" id="compAValor" value="12.50" step="0.50"></div>
+      <div class="field"><label>Distancia ida A (km)</label><input type="number" id="compADistIda" value="3.2" step="0.1"></div>
+      <div class="field"><label>Distancia volta A (km)</label><input type="number" id="compADistVolta" value="3.2" step="0.1"></div>
+      <div class="field"><label>Tempo A (min)</label><input type="number" id="compATempo" value="18" step="1"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128221; Dados da Corrida B</div>
+    <div class="grid-2">
+      <div class="field"><label>Valor B (R$)</label><input type="number" id="compBValor" value="15.00" step="0.50"></div>
+      <div class="field"><label>Distancia ida B (km)</label><input type="number" id="compBDistIda" value="2.5" step="0.1"></div>
+      <div class="field"><label>Distancia volta B (km)</label><input type="number" id="compBDistVolta" value="2.5" step="0.1"></div>
+      <div class="field"><label>Tempo B (min)</label><input type="number" id="compBTempo" value="20" step="1"></div>
+    </div>
+  </div>
+</div>
+
+<div id="panel-previsao" class="tab-panel">
+  <div class="card">
+    <div class="card-title">&#128302; Previsao de Demanda</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+      <div style="background:#15151e;border:1px solid #2a2a3a;border-radius:10px;padding:18px;text-align:center;">
+        <div style="font-size:20px;font-weight:800;color:#a855f7;" id="predHoraAtual">Alta</div>
+        <div style="font-size:10px;color:#6e6e8a;margin-top:6px;text-transform:uppercase;">Demanda agora</div>
+      </div>
+      <div style="background:#15151e;border:1px solid #2a2a3a;border-radius:10px;padding:18px;text-align:center;">
+        <div style="font-size:20px;font-weight:800;" id="predProximaHora">Crescendo</div>
+        <div style="font-size:10px;color:#6e6e8a;margin-top:6px;text-transform:uppercase;">Proxima hora</div>
+      </div>
+      <div style="background:#15151e;border:1px solid #2a2a3a;border-radius:10px;padding:18px;text-align:center;">
+        <div style="font-size:20px;font-weight:800;color:#10b981;" id="predMelhorHora">19h</div>
+        <div style="font-size:10px;color:#6e6e8a;margin-top:6px;text-transform:uppercase;">Melhor horario</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128200; Demanda por Horario</div>
+    <div id="demandaChart" style="display:flex;align-items:flex-end;gap:4px;height:160px;padding:10px 0;"></div>
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:#6e6e8a;margin-top:8px;">
+      <span>06h</span><span>09h</span><span>12h</span><span>15h</span><span>18h</span><span>21h</span><span>00h</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#127777; Clima e Trafego</div>
+    <div id="climaInfo" style="font-size:14px;color:#a0a0b8;line-height:1.8;">
+      <div class="detail-row"><span>Temperatura</span><span class="detail-val" id="climaTemp">24C</span></div>
+      <div class="detail-row"><span>Condicao</span><span class="detail-val" id="climaCond">Parcialmente nublado</span></div>
+      <div class="detail-row"><span>Trafego</span><span class="detail-val" id="climaTrafego" style="color:#f59e0b;">Moderado</span></div>
+      <div class="detail-row"><span>Chance chuva</span><span class="detail-val" id="climaChuva">15%</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="panel-meta" class="tab-panel">
+  <div class="card">
+    <div class="card-title">&#127919; Meta Diaria</div>
+    <div class="grid-2">
+      <div class="field"><label>Meta ganho (R$/dia)</label><input type="number" id="metaGanho" value="200" step="10"></div>
+      <div class="field"><label>Meta entregas</label><input type="number" id="metaEntregas" value="15" step="1"></div>
+    </div>
+    <div style="margin-top:16px;padding:20px;background:#15151e;border-radius:14px;text-align:center;">
+      <div style="font-size:36px;font-weight:800;color:#10b981;" id="goalPct">75%</div>
+      <div style="font-size:12px;color:#6e6e8a;margin-top:4px;">atingido</div>
+      <div style="margin-top:12px;font-size:14px;" id="metaGanhoHoje">R$ 150,00 / R$ 200,00</div>
+      <div class="score-bar" style="margin-top:16px;"><div class="score-fill" id="goalBar" style="width:75%;background:linear-gradient(90deg,#10b981,#34d399);"></div></div>
+    </div>
+    <div style="margin-top:16px;">
+      <div class="field"><label>Ganho hoje (R$)</label><input type="number" id="ganhoHoje" value="150" step="5"></div>
+      <div class="field"><label>Entregas hoje</label><input type="number" id="entregasHoje" value="11" step="1"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">&#128200; Estatisticas da Semana</div>
+    <div id="weekStats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+      <div style="text-align:center;padding:12px;background:#15151e;border-radius:10px;">
+        <div style="font-size:11px;color:#6e6e8a;">Seg</div>
+        <div style="font-size:18px;font-weight:700;color:#10b981;">R$180</div>
+      </div>
+      <div style="text-align:center;padding:12px;background:#15151e;border-radius:10px;">
+        <div style="font-size:11px;color:#6e6e8a;">Ter</div>
+        <div style="font-size:18px;font-weight:700;color:#10b981;">R$210</div>
+      </div>
+      <div style="text-align:center;padding:12px;background:#15151e;border-radius:10px;">
+        <div style="font-size:11px;color:#6e6e8a;">Qua</div>
+        <div style="font-size:18px;font-weight:700;color:#10b981;">R$150</div>
+      </div>
+      <div style="text-align:center;padding:12px;background:#15151e;border-radius:10px;">
+        <div style="font-size:11px;color:#6e6e8a;">Qui</div>
+        <div style="font-size:18px;font-weight:700;color:#f59e0b;">R$150</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="panel-historico" class="tab-panel">
+  <div class="card">
+    <div class="card-title">&#128203; Historico</div>
+    <div id="historyContainer" style="text-align:center;padding:40px 20px;color:#6e6e8a;">
+      <div style="font-size:40px;margin-bottom:8px;opacity:0.5;">&#128203;</div>
+      <div>Nenhuma corrida salva ainda.</div>
+    </div>
+  </div>
+  <div class="card" id="statsCard" style="display:none;">
+    <div class="card-title">&#128202; Estatisticas</div>
+    <div id="statsContent"></div>
+  </div>
+</div>
+
+</div>
+
+<button class="ai-chat-fab" id="aiChatFab">&#129302;</button>
+
+<div class="ai-chat-container" id="aiChatContainer">
+  <div class="ai-chat-header">
+    <div class="ai-chat-title">Parceiro de Rota 🏍️</div>
+    <button class="modal-close" id="btnCloseChat">&times;</button>
+  </div>
+  <div class="ai-chat-body" id="aiChatBody">
+    <div class="ai-chat-message ai">
+      E aí! Tô aqui pra te ajudar a faturar mais 🏍️<br><br>
+      Pode falar comigo como fala com um amigo. Tipo:<br>
+      • "Como tá a demanda em <b>Moema</b> hoje?"<br>
+      • "Quais dias eu trabalho pra fazer <b>R$700</b>?"<br>
+      • "Vale a pena uma corrida de R$18 por 7km?"<br><br>
+      O que manda?
+    </div>
+  </div>
+  <div class="ai-chips" id="aiChips"></div>
+  <div class="ai-chat-input-area">
+    <input type="text" class="ai-chat-input" id="aiChatInput" placeholder="Conversa comigo...">
+    <button class="voice-btn" id="btnVoiceChat" title="Falar">&#127908;</button>
+    <button class="ai-chat-send" id="btnSendChat">&#9654;</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="helpModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Como usar</div>
+      <button class="modal-close" id="btnCloseHelp">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:#a0a0b8;line-height:1.8;">
+        <strong>Analisar:</strong> Preencha os dados da corrida para receber um score de 0-100.<br><br>
+        <strong>Comparar:</strong> Compare duas corridas lado a lado.<br><br>
+        <strong>Previsao:</strong> Veja a demanda prevista por hora e condicoes climaticas.<br><br>
+        <strong>Meta:</strong> Defina metas diarias e acompanhe seu progresso em tempo real.<br><br>
+        <strong>Historico:</strong> Veja suas corridas salvas com estatisticas.<br><br>
+        <strong>Parceiro de Rota (chat):</strong> Converse naturalmente! Pergunte "como esta a demanda em Moema?", "quais dias trabalho pra fazer R$700?" ou "vale a pena R$18 por 7km?". Ele entende bairros de SP, monta plano semanal de ganhos e analisa corridas na hora.<br><br>
+        <strong>Voz:</strong> Clique no microfone no chat ou no menu para comandos de voz. O robo tambem pode falar as respostas!
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" id="btnEntendi">Entendi!</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="voiceModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">&#127908; Comandos de Voz</div>
+      <button class="modal-close" id="btnCloseVoice">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:#a0a0b8;line-height:1.8;">
+        Diga um dos comandos abaixo:<br><br>
+        <strong>"Analisar corrida"</strong> - Abre a aba de analise<br>
+        <strong>"Comparar corridas"</strong> - Abre a aba de comparacao<br>
+        <strong>"Previsao"</strong> - Abre a aba de previsao<br>
+        <strong>"Meta diaria"</strong> - Abre a aba de metas<br>
+        <strong>"Historico"</strong> - Abre o historico<br>
+        <strong>"Tema claro" / "Tema escuro"</strong> - Muda o tema<br>
+        <strong>"Limpar"</strong> - Limpa o formulario<br>
+        <strong>"Salvar"</strong> - Salva a corrida atual<br>
+        <strong>"Ajuda"</strong> - Abre o tutorial<br>
+        <strong>"Exportar"</strong> - Exporta os dados
+      </p>
+      <div style="margin-top:16px;text-align:center;">
+        <button class="voice-btn recording" id="btnVoiceRecord" style="width:64px;height:64px;font-size:28px;margin:0 auto;">&#127908;</button>
+        <div style="font-size:12px;color:#6e6e8a;margin-top:8px;" id="voiceStatus">Toque para ouvir</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="btnFecharVoice">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var historico = [];
+var currentTab = 'analisar';
+var isRecording = false;
+var recognition = null;
+var voiceEnabled = true;
+var synth = window.speechSynthesis || null;
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 3000);
+}
+
+function formatMoney(v) {
+  return 'R$ ' + parseFloat(v).toFixed(2).replace('.',',');
+}
+
+function speak(text) {
+  if (!voiceEnabled || !synth) return;
+  synth.cancel();
+  var utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'pt-BR';
+  utter.rate = 1.1;
+  utter.pitch = 1.0;
+  var voices = synth.getVoices();
+  var ptVoice = voices.find(function(v) { return v.lang.indexOf('pt') !== -1; });
+  if (ptVoice) utter.voice = ptVoice;
+  synth.speak(utter);
+}
+
+function stripHtml(html) {
+  var tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  return tmp.textContent || tmp.innerText || '';
+}
+
+function openMenu() {
+  document.getElementById('menuOverlay').classList.add('show');
+  document.getElementById('menuDrawer').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMenu() {
+  document.getElementById('menuOverlay').classList.remove('show');
+  document.getElementById('menuDrawer').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function switchTab(tabName) {
+  var panels = document.querySelectorAll('.tab-panel');
+  for (var i = 0; i < panels.length; i++) {
+    panels[i].classList.remove('tab-active');
+  }
+  var selected = document.getElementById('panel-' + tabName);
+  if (selected) selected.classList.add('tab-active');
+
+  var items = document.querySelectorAll('.menu-item[data-tab]');
+  for (var i = 0; i < items.length; i++) {
+    items[i].classList.remove('active');
+    if (items[i].getAttribute('data-tab') === tabName) {
+      items[i].classList.add('active');
+    }
+  }
+
+  var icons = {
+    'analisar': '&#129504;',
+    'comparar': '&#9878;',
+    'previsao': '&#128302;',
+    'meta': '&#127919;',
+    'historico': '&#128203;'
+  };
+  var texts = {
+    'analisar': 'Analisar com IA',
+    'comparar': 'Comparar Corridas',
+    'previsao': 'Previsao de Demanda',
+    'meta': 'Meta Diaria',
+    'historico': 'Historico'
+  };
+  document.getElementById('currentIcon').innerHTML = icons[tabName] || '&#128640;';
+  document.getElementById('currentText').textContent = texts[tabName] || tabName;
+
+  currentTab = tabName;
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('light-mode');
+  var isLight = document.body.classList.contains('light-mode');
+  document.getElementById('btnTheme').innerHTML = isLight ? '&#9728;' : '&#127769;';
+  showToast(isLight ? 'Tema claro ativado' : 'Tema escuro ativado');
+  localStorage.setItem('darkstore_theme', isLight ? 'light' : 'dark');
+}
+
+function loadTheme() {
+  var saved = localStorage.getItem('darkstore_theme');
+  if (saved === 'light') {
+    document.body.classList.add('light-mode');
+    document.getElementById('btnTheme').innerHTML = '&#9728;';
+  }
+}
+
+function toggleNotifications() {
+  showToast('Notificacoes: funcionalidade em desenvolvimento');
+}
+
+function showHelp() {
+  document.getElementById('helpModal').classList.add('show');
+}
+function closeHelp() {
+  document.getElementById('helpModal').classList.remove('show');
+}
+
+function showVoiceModal() {
+  document.getElementById('voiceModal').classList.add('show');
+}
+function closeVoiceModal() {
+  document.getElementById('voiceModal').classList.remove('show');
+}
+
+function toggleChat() {
+  var container = document.getElementById('aiChatContainer');
+  container.classList.toggle('show');
+}
+
+function addAIMessage(html) {
+  var body = document.getElementById('aiChatBody');
+  var aiDiv = document.createElement('div');
+  aiDiv.className = 'ai-chat-message ai';
+  aiDiv.innerHTML = html;
+  body.appendChild(aiDiv);
+  body.scrollTop = body.scrollHeight;
+  speak(stripHtml(html.replace(/<br\s*\/?>/gi, '. ').replace(/&bull;|•/g, ' ')));
+  renderChips(lastSuggestedChips);
+}
+
+function renderChips(list) {
+  var c = document.getElementById('aiChips');
+  if (!c) return;
+  c.innerHTML = '';
+  if (!list || !list.length) return;
+  for (var i = 0; i < list.length; i++) {
+    (function(txt) {
+      var b = document.createElement('button');
+      b.className = 'ai-chip';
+      b.textContent = txt;
+      b.addEventListener('click', function() {
+        document.getElementById('aiChatInput').value = txt;
+        sendChatMessage();
+      });
+      c.appendChild(b);
+    })(list[i]);
+  }
+}
+
+function addUserMessage(text) {
+  var body = document.getElementById('aiChatBody');
+  var userDiv = document.createElement('div');
+  userDiv.className = 'ai-chat-message user';
+  userDiv.textContent = text;
+  body.appendChild(userDiv);
+  body.scrollTop = body.scrollHeight;
+}
+
+function showTyping() {
+  var body = document.getElementById('aiChatBody');
+  var typing = document.createElement('div');
+  typing.className = 'ai-chat-message ai ai-typing';
+  typing.id = 'aiTyping';
+  typing.innerHTML = '<span></span><span></span><span></span>';
+  body.appendChild(typing);
+  body.scrollTop = body.scrollHeight;
+}
+
+function hideTyping() {
+  var t = document.getElementById('aiTyping');
+  if (t) t.remove();
+}
+
+function sendChatMessage() {
+  var input = document.getElementById('aiChatInput');
+  var msg = input.value.trim();
+  if (!msg) return;
+
+  addUserMessage(msg);
+  input.value = '';
+  showTyping();
+
+  setTimeout(function() {
+    hideTyping();
+    var resp = generateAIResponse(msg);
+    addAIMessage(resp);
+  }, 800 + Math.random() * 600);
+}
+
+// ==================== CEREBRO CONVERSACIONAL ====================
+var lastSuggestedChips = [];
+var DIA_NOMES = ['domingo', 'segunda-feira', 'terca-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sabado'];
+var WD_MULT = [0, 0.88, 0.90, 0.95, 1.05, 1.22, 0];
+var GANHO_DIA_MULT = [1.28, 0.80, 0.85, 0.93, 1.05, 1.35, 1.45];
+
+// Base de bairros de SP: mad/mam/alm/tar/noi = demanda tipica (0-100) em dia util
+// fds = multiplicador de fim de semana (bairros de escritorio caem, bairros de lazer sobem)
+var BAIRROS = [
+  { nome: 'Moema', aliases: ['moema', 'indianopolis'], mad: 28, mam: 60, alm: 88, tar: 62, noi: 92, fds: 1.15, dica: 'No almoco, a regiao da Av. Ibirapuera e Al. dos Jurupis lota de pedido de escritorio; a noite, os restaurantes da Al. dos Arapanes seguram a demanda ate umas 23h. Ticket alto e gorjeta frequente.' },
+  { nome: 'Pinheiros', aliases: ['pinheiros'], mad: 40, mam: 65, alm: 90, tar: 70, noi: 95, fds: 1.20, dica: 'A Faria Lima puxa o almoco nos dias uteis; a noite, os bares da Rua dos Pinheiros e da Fradique Coutinho bombam, principalmente de quinta a sabado.' },
+  { nome: 'Vila Madalena', aliases: ['vila madalena', 'vila madá'], mad: 62, mam: 45, alm: 70, tar: 55, noi: 90, fds: 1.35, dica: 'E bairro de bar: o forte e de noite e madrugada, principalmente sexta e sabado. De manha e fraco, nem vale ligar o app cedo.' },
+  { nome: 'Itaim Bibi', aliases: ['itaim', 'itaim bibi'], mad: 30, mam: 60, alm: 92, tar: 68, noi: 90, fds: 1.10, dica: 'Almoco corporativo fortissimo na Faria Lima e no Brascan; a noite os restaurantes da Tabapua e Joao Cachoeira seguram o ritmo.' },
+  { nome: 'Jardins', aliases: ['jardins', 'jardim paulista'], mad: 25, mam: 58, alm: 85, tar: 65, noi: 88, fds: 1.15, dica: 'Oscar Freire e Haddock Lobo concentram os pedidos; ticket dos mais altos da cidade e gorjeta rola direto.' },
+  { nome: 'Vila Olimpia', aliases: ['vila olimpia'], mad: 30, mam: 62, alm: 90, tar: 66, noi: 85, fds: 1.05, dica: 'Muito escritorio: almoco de semana e otimo; a noite, a regiao do Shopping Vila Olimpia e a Funchal ajudam.' },
+  { nome: 'Brooklin', aliases: ['brooklin', 'broklin'], mad: 22, mam: 55, alm: 82, tar: 60, noi: 80, fds: 0.95, dica: 'Forte no almoco de dia util por causa das empresas da Berrini; fim de semana cai bastante, melhor migrar pra Moema ou Campo Belo.' },
+  { nome: 'Vila Mariana', aliases: ['vila mariana'], mad: 20, mam: 58, alm: 80, tar: 62, noi: 85, fds: 1.05, dica: 'Residencial com vida propria a noite; a Domingos de Morais e a Vergueiro concentram os restaurantes.' },
+  { nome: 'Bela Vista', aliases: ['bela vista', 'bexiga', 'bella vista'], mad: 45, mam: 55, alm: 82, tar: 60, noi: 88, fds: 1.20, dica: 'De noite e imbativel: restaurantes da 13 de Maio e proximidades da Augusta. Madrugada de fds tambem rende.' },
+  { nome: 'Consolacao', aliases: ['consolacao'], mad: 40, mam: 58, alm: 80, tar: 62, noi: 82, fds: 1.15, dica: 'Perto da Paulista, pega o transbordo dos bares da Augusta a noite; almoco de semana e estavel.' },
+  { nome: 'Liberdade', aliases: ['liberdade'], mad: 18, mam: 55, alm: 85, tar: 60, noi: 80, fds: 1.25, dica: 'Almoco e o ponto forte, principalmente sabado e domingo com a feira e os restaurantes orientais.' },
+  { nome: 'Centro', aliases: ['centro', 'praca da se', 'praça da sé'], mad: 12, mam: 70, alm: 95, tar: 75, noi: 52, fds: 0.55, dica: 'So rende em dia util: almoco fortissimo, mas a noite esvazia e fim de semana e deserto. Cuidado redobrado com seguranca a noite.' },
+  { nome: 'Republica', aliases: ['republica'], mad: 30, mam: 62, alm: 85, tar: 68, noi: 65, fds: 0.75, dica: 'Bom almoco em dia util; a noite e fim de semana a demanda cai e o risco sobe.' },
+  { nome: 'Barra Funda', aliases: ['barra funda'], mad: 28, mam: 60, alm: 78, tar: 65, noi: 75, fds: 1.00, dica: 'Demanda constante por causa do transporte; dia de show no Espaco Unimed ou Allianz vira festa.' },
+  { nome: 'Santana', aliases: ['santana'], mad: 25, mam: 60, alm: 82, tar: 60, noi: 82, fds: 1.10, dica: 'Zona norte forte: a Voluntarios da Patria concentra restaurante; noite de fds rende bem.' },
+  { nome: 'Tatuape', aliases: ['tatuape'], mad: 28, mam: 62, alm: 85, tar: 65, noi: 88, fds: 1.20, dica: 'Shopping e a Radial Leste puxam demanda; noite de sabado e uma das melhores da zona leste.' },
+  { nome: 'Mooca', aliases: ['mooca'], mad: 20, mam: 55, alm: 80, tar: 58, noi: 82, fds: 1.10, dica: 'Bairro residencial de cantina: almoco de domingo em familia e o melhor momento da semana.' },
+  { nome: 'Vila Prudente', aliases: ['vila prudente'], mad: 18, mam: 55, alm: 78, tar: 58, noi: 80, fds: 1.05, dica: 'Demanda estavel de morador; a noite rende mais que o almoco.' },
+  { nome: 'Ipiranga', aliases: ['ipiranga'], mad: 15, mam: 52, alm: 76, tar: 55, noi: 78, fds: 1.05, dica: 'Residencial, movimento honesto a noite e no domingo de dia.' },
+  { nome: 'Saude', aliases: ['saude'], mad: 18, mam: 55, alm: 80, tar: 58, noi: 80, fds: 1.00, dica: 'A Jabaquara e a Av. do Estado concentram o movimento; bem estavel durante a semana.' },
+  { nome: 'Santo Amaro', aliases: ['santo amaro'], mad: 25, mam: 62, alm: 88, tar: 65, noi: 82, fds: 0.95, dica: 'Almoco corporativo forte (Berrini sul); fim de semana cai, vale subir pra Brooklin/Campo Belo.' },
+  { nome: 'Campo Belo', aliases: ['campo belo'], mad: 18, mam: 55, alm: 82, tar: 60, noi: 80, fds: 1.00, dica: 'Residencial comercio na Vieira de Morais; combina bem com Moema no mesmo turno.' },
+  { nome: 'Perdizes', aliases: ['perdizes'], mad: 20, mam: 55, alm: 80, tar: 60, noi: 82, fds: 1.10, dica: 'Residencial de classe alta, boa gorjeta; a noite pega o transbordo da Pompeia e Vila Madalena.' },
+  { nome: 'Pompeia', aliases: ['pompeia', 'lapa'], mad: 22, mam: 55, alm: 78, tar: 60, noi: 80, fds: 1.10, dica: 'Shopping Bourbon e os bares da Vila Romana dao movimento; noite de fds e boa.' },
+  { nome: 'Butanta', aliases: ['butanta'], mad: 20, mam: 62, alm: 82, tar: 62, noi: 78, fds: 0.95, dica: 'USP movimenta almoco e fim de tarde em dia util; fds cai bastante.' },
+  { nome: 'Higienopolis', aliases: ['higienopolis'], mad: 22, mam: 58, alm: 82, tar: 62, noi: 84, fds: 1.10, dica: 'Ticket alto e gorjeta boa; restaurantes da Pajeu e proximidades do Shopping Patio Higienopolis.' }
+];
+
+function normTxt(s) {
+  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim();
+}
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function tem(msg, termos) {
+  for (var i = 0; i < termos.length; i++) { if (msg.indexOf(termos[i]) !== -1) return true; }
+  return false;
+}
+function seededRand(seed) {
+  var h = 2166136261;
+  for (var i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return function() {
+    h = Math.imul(h ^ (h >>> 15), 2246822507) >>> 0;
+    h = Math.imul(h ^ (h >>> 13), 3266489909) >>> 0;
+    return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+  };
+}
+
+function acharBairro(msgNorm) {
+  for (var i = 0; i < BAIRROS.length; i++) {
+    for (var j = 0; j < BAIRROS[i].aliases.length; j++) {
+      var re = new RegExp('\\b' + BAIRROS[i].aliases[j] + '\\b');
+      if (re.test(msgNorm)) return BAIRROS[i];
+    }
+  }
+  return null;
+}
+
+function parteDoDia(h) {
+  if (h < 6) return 'mad';
+  if (h < 11) return 'mam';
+  if (h < 15) return 'alm';
+  if (h < 19) return 'tar';
+  return 'noi';
+}
+function partLabel(p) {
+  return { mad: 'madrugada', mam: 'manha', alm: 'almoco', tar: 'tarde', noi: 'noite' }[p];
+}
+function partFaixa(p) {
+  return { mad: '0h as 5h', mam: '6h as 10h30', alm: '11h30 as 14h', tar: '15h as 18h', noi: '19h as 22h30' }[p];
+}
+function multDiaBairro(b, d) {
+  var g = d.getDay();
+  if (g === 6) return b.fds * 1.15;
+  if (g === 0) return b.fds;
+  return WD_MULT[g];
+}
+function demandaBairro(b, date) {
+  var rnd = seededRand(b.nome + '|' + date.toDateString());
+  var mult = multDiaBairro(b, date);
+  function val(base) {
+    var jit = 0.92 + rnd() * 0.16;
+    return Math.max(5, Math.min(100, Math.round(base * mult * jit)));
+  }
+  return { mad: val(b.mad), mam: val(b.mam), alm: val(b.alm), tar: val(b.tar), noi: val(b.noi) };
+}
+function nivelLabel(v) {
+  if (v < 32) return { txt: 'Fraca', emoji: '😴' };
+  if (v < 50) return { txt: 'Moderada', emoji: '🙂' };
+  if (v < 68) return { txt: 'Alta', emoji: '💪' };
+  if (v < 85) return { txt: 'Muito alta', emoji: '🔥' };
+  return { txt: 'Bombando', emoji: '🚀' };
+}
+function melhorPeriodo(info) {
+  var partes = ['mad', 'mam', 'alm', 'tar', 'noi'];
+  var best = partes[0];
+  for (var i = 1; i < partes.length; i++) { if (info[partes[i]] > info[best]) best = partes[i]; }
+  return { part: best, valor: info[best] };
+}
+function chanceChuvaAtual() {
+  var t = document.getElementById('climaChuva').textContent || '0%';
+  var n = parseInt(t.replace('%', ''), 10);
+  return isNaN(n) ? 0 : n;
+}
+
+function extrairDinheiro(msgNorm) {
+  var mMil = msgNorm.match(/(\d+(?:[.,]\d+)?)?\s*(mil|conto|contos|k)\b/);
+  if (mMil) {
+    if (!mMil[1]) return 1000;
+    var v2 = parseFloat(mMil[1].replace(',', '.'));
+    if (!isNaN(v2) && v2 > 0) return v2 * 1000;
+  }
+  var m = msgNorm.match(/(\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|\d+(?:,\d{1,2})?)/);
+  if (!m) return null;
+  var raw = m[1];
+  var v;
+  if (raw.indexOf('.') !== -1 && raw.indexOf(',') !== -1) v = parseFloat(raw.replace(/\./g, '').replace(',', '.'));
+  else if (/\.\d{3}/.test(raw)) v = parseFloat(raw.replace(/\./g, ''));
+  else v = parseFloat(raw.replace(',', '.'));
+  if (isNaN(v) || v <= 0 || v > 99999) return null;
+  return v;
+}
+function extrairHoras(msgNorm) {
+  var m = msgNorm.match(/(\d{1,2})\s*(h|hrs|horas)/);
+  if (!m) return null;
+  var h = parseInt(m[1], 10);
+  if (h < 3 || h > 16) return null;
+  return h;
+}
+function extrairDias(msgNorm) {
+  var m = msgNorm.match(/(\d)\s*dias/);
+  if (!m) return null;
+  var n = parseInt(m[1], 10);
+  if (n < 1 || n > 7) return null;
+  return n;
+}
+
+function ganhoHoraRealista() {
+  var txt = document.getElementById('dGanhoHora').textContent || '';
+  var n = parseFloat(txt.replace('R$', '').replace(/\s/g, '').replace(/\./g, '').replace(',', '.'));
+  if (isNaN(n) || n < 8 || n > 90) n = 28;
+  var efetivo = Math.round(n * 0.72);
+  if (efetivo < 16) efetivo = 16;
+  if (efetivo > 30) efetivo = 30;
+  return efetivo;
+}
+
+function gerarPlano(alvo, horas, nDias) {
+  var gh = ganhoHoraRealista();
+  var est = [];
+  for (var i = 0; i < 7; i++) {
+    est.push({ dia: i, valor: Math.round(gh * horas * GANHO_DIA_MULT[i]) });
+  }
+  var ordenado = est.slice().sort(function(a, b) { return b.valor - a.valor; });
+  var escolhidos = [], soma = 0;
+  if (nDias) {
+    for (var k = 0; k < ordenado.length && escolhidos.length < nDias; k++) {
+      escolhidos.push(ordenado[k]);
+      soma += ordenado[k].valor;
+    }
+  } else {
+    for (var k2 = 0; k2 < ordenado.length && soma < alvo; k2++) {
+      escolhidos.push(ordenado[k2]);
+      soma += ordenado[k2].valor;
+    }
+  }
+  return { escolhidos: escolhidos, soma: soma, gh: gh, alcancou: soma >= alvo, todos: est, ordenado: ordenado };
+}
+
+function montarPlanoTexto(msgNorm) {
+  var alvo = extrairDinheiro(msgNorm) || 700;
+  var horas = extrairHoras(msgNorm) || 8;
+  var nDias = extrairDias(msgNorm);
+  var mensal = tem(msgNorm, ['por mes', 'no mes', 'mensal', 'mes todo']);
+  var alvoSemana = alvo;
+  var prefixoMes = '';
+  if (mensal) {
+    alvoSemana = Math.round(alvo / 4.33);
+    prefixoMes = 'Pra fechar <b>' + formatMoney(alvo) + '</b> no mes, a gente quebra em cerca de <b>' + formatMoney(alvoSemana) + '</b> por semana. ';
+  }
+
+  var p = gerarPlano(alvoSemana, horas, nDias);
+  var abertura = pick([
+    'Fiz as contas aqui pra voce 👇<br><br>',
+    'Boa pergunta! Deixa eu montar teu plano 👇<br><br>',
+    'Fechou, olha so o que eu montei:<br><br>'
+  ]);
+
+  var txt = abertura + prefixoMes;
+  txt += 'Com a tua media de <b>~' + formatMoney(p.gh) + '/hora</b> liquida (ja descontando gasolina e tempo parado entre entregas), rodando <b>~' + horas + 'h por dia</b>:<br><br>';
+
+  if (nDias && p.alcancou) {
+    txt += 'Nos <b>' + nDias + ' dias</b> mais fortes da semana:<br>';
+    for (var i0 = 0; i0 < p.escolhidos.length; i0++) {
+      txt += '• <b>' + DIA_NOMES[p.escolhidos[i0].dia] + '</b>: ~' + formatMoney(p.escolhidos[i0].valor) + '<br>';
+    }
+    txt += '<br>Total: ~<b>' + formatMoney(p.soma) + '</b> — passa dos ' + formatMoney(alvoSemana) + '. 🎯 ';
+    var minN = 0, somaMin = 0;
+    for (var m2 = 0; m2 < p.ordenado.length; m2++) { somaMin += p.ordenado[m2].valor; minN++; if (somaMin >= alvoSemana) break; }
+    if (minN < nDias) {
+      txt += 'E olha: se quiser folgar mais, so com <b>' + minN + ' ' + (minN === 1 ? 'dia' : 'dias') + '</b> (' + DIA_NOMES[p.ordenado[0].dia] + (minN > 1 ? ' + ' + DIA_NOMES[p.ordenado[1].dia] : '') + ') voce ja bate a meta.';
+    }
+    txt += '<br><br>Dica de ouro: na sexta e no sabado, o dinheiro ta na <b>noite (19h-23h)</b>; no domingo, o <b>almoco (11h30-14h)</b> e o melhor horario.';
+  } else if (!p.alcancou && nDias) {
+    txt += 'Trabalhando so <b>' + nDias + ' ' + (nDias === 1 ? 'dia' : 'dias') + '</b> da pra tirar ~<b>' + formatMoney(p.soma) + '</b>:<br>';
+    for (var i = 0; i < p.escolhidos.length; i++) {
+      txt += '• <b>' + DIA_NOMES[p.escolhidos[i].dia] + '</b>: ~' + formatMoney(p.escolhidos[i].valor) + '<br>';
+    }
+    var extra = null;
+    for (var j = 0; j < p.ordenado.length; j++) {
+      var cand = p.ordenado[j];
+      var achou = false;
+      for (var q = 0; q < p.escolhidos.length; q++) { if (p.escolhidos[q].dia === cand.dia) achou = true; }
+      if (!achou) { extra = cand; break; }
+    }
+    txt += '<br>Falta pouco! Se adicionar a <b>' + DIA_NOMES[extra.dia] + '</b> (~' + formatMoney(extra.valor) + '), voce passa da meta com folga. Outra opcao: esticar 1h-2h a mais na sexta e no sabado, que sao os dias que mais pagam.';
+  } else if (!p.alcancou) {
+    var somaTotal = 0;
+    for (var t = 0; t < p.todos.length; t++) somaTotal += p.todos[t].valor;
+    var mediaMult = 1.08;
+    var horasNec = Math.ceil(alvoSemana / (p.gh * mediaMult));
+    txt += 'Sendo sincero: mesmo rodando <b>a semana inteira</b> (' + formatMoney(somaTotal) + ' estimados), fica apertado pra chegar em ' + formatMoney(alvoSemana) + ' com ' + horas + 'h/dia. Pra bater essa meta voce precisaria de ~<b>' + horasNec + 'h por dia</b>, ou mirar so os horarios de pico, onde a media sobe pra ~' + formatMoney(Math.round(p.gh * 1.25)) + '/h.<br><br>Meu conselho: prioriza sexta, sabado e domingo a noite, que e onde o dinheiro ta.';
+  } else {
+    txt += 'O caminho mais esperto pros seus <b>' + formatMoney(alvoSemana) + '</b>:<br>';
+    for (var i = 0; i < p.escolhidos.length; i++) {
+      txt += '• <b>' + DIA_NOMES[p.escolhidos[i].dia] + '</b>: ~' + formatMoney(p.escolhidos[i].valor) + '<br>';
+    }
+    var folga = p.soma - alvoSemana;
+    txt += '<br>Total: ~<b>' + formatMoney(p.soma) + '</b> trabalhando so <b>' + p.escolhidos.length + ' ' + (p.escolhidos.length === 1 ? 'dia' : 'dias') + '</b>. ';
+    if (folga > 30) txt += 'Passa da meta com folga (' + formatMoney(folga) + ' a mais) e voce ainda fica com ' + (7 - p.escolhidos.length) + ' dias livres. 🎯';
+    else txt += 'Bate a meta certinho. 🎯';
+    txt += '<br><br>Dica de ouro: na sexta e no sabado, o dinheiro ta na <b>noite (19h-23h)</b>; no domingo, o <b>almoco (11h30-14h)</b> e o melhor horario. Trabalha dentro dessas janelas que a tua media por hora sobe uns 20%.';
+  }
+  lastSuggestedChips = ['E se eu fizer so 5h por dia?', 'Qual bairro rende mais sabado?', 'Como ta a demanda agora?'];
+  return txt;
+}
+
+function montarProjecaoHoje() {
+  var agora = new Date();
+  var gh = ganhoHoraRealista();
+  var h = agora.getHours();
+  var mult = GANHO_DIA_MULT[agora.getDay()];
+  var restantes = h < 11 ? 3 : h < 15 ? 4 : h < 19 ? 3.5 : h < 23 ? 2.5 : 0;
+  var pico = h < 15 ? 'o almoco ainda ta rolando e a noite vem forte' : h < 19 ? 'a noite e o ponto alto de hoje' : h < 23 ? 'ainda da pra aproveitar o fim da noite' : 'hoje ja era, melhor descansar';
+  var estimativa = Math.round(gh * mult * restantes * 1.1);
+  lastSuggestedChips = ['Montar plano de R$700', 'Como ta Moema agora?', 'Melhor horario hoje'];
+  if (restantes === 0) {
+    return 'A essa altura do dia, sinceramente? Vale mais descansar e voltar forte amanha de manha. 😉<br><br>Se quiser, eu monto um plano pro resto da semana — me fala uma meta (tipo "quero fazer R$700") que eu calculo direitinho.';
+  }
+  return 'Olha, hoje e ' + DIA_NOMES[agora.getDay()] + ' e ' + pico + '. Se voce rodar mais umas <b>' + restantes + 'h</b> dentro das janelas boas, da pra fazer na faixa de <b>' + formatMoney(estimativa) + '</b> ate o fim do dia.<br><br>Quer que eu monte um plano pra semana toda? Me diz a meta que eu calculo.';
+}
+
+function montarDemandaBairro(b, msgNorm) {
+  var hoje = new Date();
+  var alvo = new Date();
+  var rotulo = 'hoje';
+  var noFuturo = false;
+  var diaAlvo = -1;
+  var refs = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
+  for (var d = 0; d < 7; d++) {
+    if (new RegExp('\\b' + refs[d]).test(msgNorm)) { diaAlvo = d; break; }
+  }
+  if (msgNorm.indexOf('fim de semana') !== -1 && diaAlvo === -1) diaAlvo = 6;
+  if (diaAlvo >= 0) {
+    var diff = (diaAlvo - hoje.getDay() + 7) % 7;
+    alvo.setDate(alvo.getDate() + diff);
+    if (diff === 0) rotulo = 'hoje';
+    else if (diff === 1) rotulo = 'amanha';
+    else rotulo = DIA_NOMES[diaAlvo];
+    noFuturo = diff > 0;
+  } else if (msgNorm.indexOf('amanha') !== -1) {
+    alvo.setDate(alvo.getDate() + 1);
+    rotulo = 'amanha';
+    noFuturo = true;
+  }
+  var info = demandaBairro(b, alvo);
+  var diaNome = DIA_NOMES[alvo.getDay()];
+  var melhor = melhorPeriodo(info);
+
+  var txt = '';
+  if (!noFuturo) {
+    var part = parteDoDia(hoje.getHours());
+    var nivel = nivelLabel(info[part]);
+    txt += pick(['Olha, ', 'Boa! ', 'Deixa eu ver aqui... ']);
+    txt += 'hoje (<b>' + diaNome + '</b>) em <b>' + b.nome + '</b> a demanda agora ' + (part === 'mad' ? 'de madrugada' : 'de ' + partLabel(part)) + ' ta <b>' + nivel.txt + '</b> ' + nivel.emoji + ' — indice ' + info[part] + '/100.<br><br>';
+    var ORDEM = { mad: 0, mam: 1, alm: 2, tar: 3, noi: 4 };
+    if (melhor.part === part) txt += 'E detalhe: voce ta bem na melhor janela do dia. Aproveita!';
+    else if (ORDEM[melhor.part] > ORDEM[part]) txt += 'A melhor janela de hoje ainda ta por vir: o <b>' + partLabel(melhor.part) + '</b> (' + partFaixa(melhor.part) + '), com indice ~' + melhor.valor + '/100. Se puder escolher, guarda energia pra esse horario.';
+    else txt += 'A melhor janela de hoje ja passou (foi o ' + partLabel(melhor.part) + ', indice ~' + melhor.valor + '/100). Amanha ela tende a se repetir, entao mira esse horario.';
+  } else {
+    var inicio = rotulo === 'amanha' ? 'Amanha (<b>' + diaNome + '</b>)' : 'No <b>' + rotulo + '</b>';
+    txt += inicio + ' em <b>' + b.nome + '</b>: a melhor janela vai ser o <b>' + partLabel(melhor.part) + '</b> (' + partFaixa(melhor.part) + '), com demanda <b>' + nivelLabel(melhor.valor).txt.toLowerCase() + '</b> ' + nivelLabel(melhor.valor).emoji + ' — indice ~' + melhor.valor + '/100.<br><br>';
+    txt += 'Resumo do dia: manha ~' + info.mam + ', almoco ~' + info.alm + ', tarde ~' + info.tar + ', noite ~' + info.noi + '. ';
+  }
+
+  txt += '<br>💡 ' + b.dica;
+
+  var chuva = chanceChuvaAtual();
+  if (chuva >= 40) {
+    txt += '<br><br>🌧️ Atencao: chance de chuva de ' + chuva + '% hoje. A demanda costuma subir e rola bonus, mas roda com cuidado e capa boa.';
+  }
+  txt += '<br><br>Quer que eu monte um plano de ganhos pra essa regiao?';
+  lastSuggestedChips = ['Plano pra fazer R$700', 'E amanha, como fica?', 'Qual bairro ta melhor agora?'];
+  return txt;
+}
+
+function montarDemandaGeral() {
+  var agora = new Date();
+  var part = parteDoDia(agora.getHours());
+  var lista = [];
+  for (var i = 0; i < BAIRROS.length; i++) {
+    var info = demandaBairro(BAIRROS[i], agora);
+    lista.push({ nome: BAIRROS[i].nome, valor: info[part] });
+  }
+  lista.sort(function(a, b) { return b.valor - a.valor; });
+  var txt = 'Agora (' + partLabel(part) + ' de ' + DIA_NOMES[agora.getDay()] + '), os pontos mais quentes da cidade:<br><br>';
+  for (var k = 0; k < 3; k++) {
+    var n = nivelLabel(lista[k].valor);
+    txt += (k + 1) + '. <b>' + lista[k].nome + '</b> — ' + n.txt.toLowerCase() + ' ' + n.emoji + ' (' + lista[k].valor + '/100)<br>';
+  }
+  txt += '<br>Se for sair agora, eu miraria <b>' + lista[0].nome + '</b>. Quer detalhes de algum bairro especifico? E so falar o nome.';
+  lastSuggestedChips = ['Como ta Moema?', 'E de noite, onde rende?', 'Plano pra fazer R$700'];
+  return txt;
+}
+
+function montarMelhorHorario(msgNorm) {
+  var alvo = new Date();
+  var ehAmanha = msgNorm && msgNorm.indexOf('amanha') !== -1;
+  if (ehAmanha) alvo.setDate(alvo.getDate() + 1);
+  var soma = { mad: 0, mam: 0, alm: 0, tar: 0, noi: 0 };
+  for (var i = 0; i < BAIRROS.length; i++) {
+    var info = demandaBairro(BAIRROS[i], alvo);
+    soma.mad += info.mad; soma.mam += info.mam; soma.alm += info.alm; soma.tar += info.tar; soma.noi += info.noi;
+  }
+  var partes = ['mam', 'alm', 'tar', 'noi'];
+  partes.sort(function(a, b) { return soma[b] - soma[a]; });
+  var quando = ehAmanha ? 'Amanha' : 'Hoje';
+  var txt = quando + ' (' + DIA_NOMES[alvo.getDay()] + ') as janelas que mais pagam, na media da cidade:<br><br>';
+  txt += '🥇 <b>' + partLabel(partes[0]) + '</b> (' + partFaixa(partes[0]) + ') — a melhor ' + (ehAmanha ? 'de amanha' : 'de hoje') + '<br>';
+  txt += '🥈 <b>' + partLabel(partes[1]) + '</b> (' + partFaixa(partes[1]) + ')<br><br>';
+  txt += 'Se der pra conciliar as duas, e o combo perfeito. Quer que eu veja um bairro especifico?';
+  lastSuggestedChips = ['Como ta Pinheiros?', 'Montar plano de R$700', 'E amanha?'];
+  return txt;
+}
+
+function montarCorridaRapida(msgNorm) {
+  var mKm = msgNorm.match(/(\d+(?:[,\.]\d+)?)\s*km/);
+  if (!mKm) return null;
+  var km = parseFloat(mKm[1].replace(',', '.'));
+  var v = extrairDinheiro(msgNorm);
+  if (!v || !km || km <= 0) return null;
+  var mMin = msgNorm.match(/(\d{1,3})\s*min/);
+  var tempo = mMin ? parseInt(mMin[1], 10) : Math.round(km / 24 * 60 + 6);
+  var rpk = v / km;
+  var gph = v / (tempo / 60);
+  var veredito, conselho;
+  if (rpk >= 2.2) {
+    veredito = pick(['Pode aceitar sem medo! ✅', 'Aceita que e boa! ✅', 'Essa eu pegava na hora! ✅']);
+    conselho = 'Ta acima de R$2,20/km, ou seja, acima da media da cidade. Corrida boa mesmo.';
+  } else if (rpk >= 1.5) {
+    veredito = pick(['Eu aceitaria, mas sem festa. 🙂', 'Da pra aceitar, ta na media. 🙂']);
+    conselho = 'Ta dentro da media. Se tocar outra acima de R$2,20/km em seguida, prioriza a outra — mas essa nao te faz perder dinheiro.';
+  } else {
+    veredito = pick(['Sinceramente? Eu recusaria. 🚫', 'Nao vale a pena, te falo a real. 🚫']);
+    conselho = 'Abaixo de R$1,50/km mal cobre teu custo com gasolina e desgaste. Melhor esperar 2 minutinhos que vem coisa melhor.';
+  }
+  var pico = document.getElementById('pico').checked;
+  var extra = '';
+  if (pico && rpk < 2.2) extra = '<br><br>Como ta em horario de pico, eu seguraria um pouco: nesse horario costuma vir corrida melhor.';
+  lastSuggestedChips = ['E R$25 por 9km?', 'Como ta a demanda agora?', 'Qual o score dessa corrida?'];
+  return veredito + '<br><br>Essa corrida da <b>' + formatMoney(rpk) + '/km</b> e ~<b>' + formatMoney(gph) + '/h</b> (' + tempo + ' min estimados). ' + conselho + extra;
+}
+
+function montarDicas() {
+  var dicas = [
+    'Uma que pouca gente faz: fica parado perto de polo de restaurante (tipo a Al. dos Arapanes em Moema) em vez de ficar rodando. Voce gasta menos gasolina e a corrida vem ate voce. 🏍️',
+    'Corrida curta de ate 3km e a que mais paga por kilometro. Se tocar duas seguidas assim no pico, sua hora pode passar de R$40.',
+    'Chuva assusta a concorrencia: metade dos entregadores some e a demanda explode. Quem tem capa boa e cuidado, fatura. So nao abusa na velocidade.',
+    'Domingo de dia e subestimado: almoco em familia em bairro residencial (Mooca, Tatuape, Saude) paga bem e o transito e leve.',
+    'Evita ficar online em bairro de escritorio depois das 15h em dia util — despenca. Melhor migrar pra bairro residencial nesse horario.'
+  ];
+  lastSuggestedChips = ['Mais uma dica', 'Como ta a demanda agora?', 'Plano pra fazer R$700'];
+  return pick(['Anota essa: ', 'Vou te falar uma que funciona: ', 'Dica de quem ve os numeros todo dia: ']) + dicas[Math.floor(Math.random() * dicas.length)];
+}
+
+function montarAjuda() {
+  lastSuggestedChips = ['Como ta Moema hoje?', 'Quero fazer R$700 essa semana', 'Vale a pena R$18 por 7km?'];
+  return 'Posso te ajudar com bastante coisa, e pode falar do seu jeito:<br><br>' +
+    '• <b>Demanda por bairro</b> — "como ta Moema hoje?", "Pinheiros amanha rende?"<br>' +
+    '• <b>Plano de ganhos</b> — "quais dias trabalho pra fazer R$700?", "da pra tirar mil por semana?"<br>' +
+    '• <b>Analise de corrida</b> — "vale a pena R$18 por 7km?" ou preenche a aba Analisar<br>' +
+    '• <b>Melhores horarios</b> — "que horas rende mais hoje?"<br>' +
+    '• <b>Sua meta e historico</b> — "to longe da meta?", "quantas corridas salvei?"<br><br>' +
+    'E so conversar comigo como conversaria com um parceiro de trabalho. 🙂';
+}
+
+function generateAIResponse(msg) {
+  var lower = normTxt(msg);
+  lastSuggestedChips = [];
+
+  // ---- small talk: saudacao ----
+  if (lower.length < 40 && /^(oi+|ola|eai|e ai|opa|hey|ei|bom dia|boa tarde|boa noite|salve|beleza|blz|tudo bem|tudo bom|como vai|como voce ta|como vc ta)/.test(lower)) {
+    var h = new Date().getHours();
+    var saud = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
+    var part = parteDoDia(h);
+    var quente = null, quenteVal = 0;
+    for (var i = 0; i < BAIRROS.length; i++) {
+      var inf = demandaBairro(BAIRROS[i], new Date());
+      if (inf[part] > quenteVal) { quenteVal = inf[part]; quente = BAIRROS[i].nome; }
+    }
+    lastSuggestedChips = ['Como ta a demanda agora?', 'Plano pra fazer R$700', 'Me da uma dica'];
+    return saud + '! Tudo otimo por aqui, pronto pra te ajudar a faturar. 😄<br><br>So pra adiantar: agora o bairro mais quente e <b>' + quente + '</b> (' + quenteVal + '/100). O que manda?';
+  }
+
+  // ---- agradecimento ----
+  if (tem(lower, ['obrigad', 'valeu', 'vlw', 'brigad', 'show', 'top', 'massa', 'perfeito', 'otimo', 'ajudou'])) {
+    lastSuggestedChips = ['Como ta a demanda agora?', 'Montar plano de R$700'];
+    return pick([
+      'Por nada! Pra isso que to aqui. 🤝 Boa corrida e se cuida!',
+      'Imagina! Qualquer coisa e so chamar. Bora faturar! 💪',
+      'Tamu junto! Vai la e faz a meta. 🏍️'
+    ]);
+  }
+
+  // ---- despedida ----
+  if (lower.length < 30 && tem(lower, ['tchau', 'ate mais', 'flw', 'fui', 'ate logo', 'adeus'])) {
+    lastSuggestedChips = [];
+    return pick(['Ate mais! Boa corrida e volta aqui quando precisar. 🏍️', 'Falou! Sucesso nas entregas! 🚀']);
+  }
+
+  // ---- quem e voce ----
+  if (tem(lower, ['quem e voce', 'quem eh voce', 'o que voce faz', 'seu nome', 'voce e um robo', 'voce e real'])) {
+    lastSuggestedChips = ['O que voce sabe fazer?', 'Como ta Moema hoje?'];
+    return 'Sou teu parceiro de rota aqui no DarkStore! 😄 Penso comigo como aquele amigo entregador veterano que conhece cada bairro, sabe que horas o app toca mais e faz a conta de quanto voce precisa rodar pra bater a meta. Pode me perguntar qualquer coisa de demanda, ganhos ou corridas.';
+  }
+
+  // ---- analise rapida de corrida (valor + km no texto) ----
+  if (lower.indexOf('km') !== -1 && tem(lower, ['vale a pena', 'aceito', 'aceitar', 'pegar', 'pego', 'corrida', 'compensa', 'reais', 'r$'])) {
+    var rapida = montarCorridaRapida(lower);
+    if (rapida) return rapida;
+  }
+
+  // ---- plano de ganhos / dias para meta ----
+  if (tem(lower, ['quais dias', 'que dias', 'plano', 'planejar', 'planejamento']) ||
+      (tem(lower, ['ganhar', 'fazer', 'tirar', 'conseguir', 'juntar', 'arrecadar', 'meta', 'quero', 'preciso']) && (extrairDinheiro(lower) || tem(lower, ['semana', 'por semana', 'mensal', 'por mes'])))) {
+    return montarPlanoTexto(lower);
+  }
+
+  // ---- projecao: quanto da pra fazer hoje ----
+  if (tem(lower, ['quanto da pra fazer', 'quanto vou ganhar', 'quanto consigo fazer', 'da pra fazer quanto', 'quanto posso ganhar'])) {
+    return montarProjecaoHoje();
+  }
+
+  // ---- demanda por bairro ----
+  var bairro = acharBairro(lower);
+  if (bairro) {
+    return montarDemandaBairro(bairro, lower);
+  }
+
+  // ---- lugar fora da base (cidade/bairro desconhecido) ----
+  if (tem(lower, ['demanda', 'movimento', 'pedido', 'entrega', 'rende', 'ta bom', 'ta fraco', 'bombando'])) {
+    var mLugar = lower.match(/\b(?:em|no|na|de|por)\s+([a-z]{3,}(?:\s+[a-z]{3,})?)/);
+    var stop = ['geral', 'app', 'aplicativo', 'entrega', 'entregas', 'ifood', 'uber', 'rappi', 'cidade', 'sao paulo', 'hoje', 'agora', 'amanha', 'semana', 'que', 'isso', 'essa', 'esse', 'voces', 'voce'];
+    if (mLugar && stop.indexOf(mLugar[1]) === -1 && stop.indexOf(mLugar[1].split(' ')[0]) === -1) {
+      var lugar = mLugar[1].replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+      lastSuggestedChips = ['Como ta Moema hoje?', 'Onde ta bombando agora?', 'Plano pra fazer R$700'];
+      return 'Te falo a real: <b>' + lugar + '</b> ainda nao ta no meu mapa detalhado — meu forte por enquanto e a capital de SP (Moema, Pinheiros, Tatuape, Vila Madalena e mais uns 20 bairros).<br><br>Mas o padrao que vale pra quase toda regiao: <b>almoco (11h30-14h)</b> e <b>noite (19h-22h30)</b> sao as janelas de ouro, e sexta/sabado pagam ate 40% a mais que segunda.<br><br>Se voce roda por ai, me conta como e o movimento que eu vou aprendendo! 🤝';
+    }
+    return montarDemandaGeral();
+  }
+  if (tem(lower, ['tocando', 'bombando', 'fraco', 'fraca', 'corridas hoje', 'ta bom hoje', 'ta fraco'])) {
+    return montarDemandaGeral();
+  }
+
+  // ---- melhor horario ----
+  if (tem(lower, ['melhor horario', 'que horas', 'qual horario', 'horario bom', 'horario de pico', 'quando rende', 'quando sai', 'que hora'])) {
+    return montarMelhorHorario(lower);
+  }
+
+  // ---- demanda geral sem contexto ----
+  if (tem(lower, ['demanda', 'previsao', 'movimento'])) {
+    return montarDemandaGeral();
+  }
+
+  // ---- score / corrida na tela ----
+  if (tem(lower, ['score', 'pontuacao', 'nota', 'aceito essa', 'vale a pena essa', 'analisa essa corrida'])) {
+    var score = calcularScoreAtual();
+    var reacao = score >= 70 ? 'Tá bonita essa corrida, eu aceitaria tranquilo. ✅' : score >= 45 ? 'Tá no limite... eu olharia os fatores de risco antes de aceitar. ⚠️' : 'Falando a real: essa tá fraca, eu recusaria. 🚫';
+    lastSuggestedChips = ['Por que esse score?', 'Vale a pena R$18 por 7km?', 'Me da uma dica'];
+    return 'O score dessa corrida que tá na tela é <b>' + score + '/100</b>. ' + reacao;
+  }
+  if (tem(lower, ['lucro', 'quanto sobra', 'quanto lucro'])) {
+    var valor = parseFloat(document.getElementById('valor').value) || 0;
+    var distIda = parseFloat(document.getElementById('distIda').value) || 0;
+    var distVolta = parseFloat(document.getElementById('distVolta').value) || 0;
+    var distTotal = distIda + distVolta;
+    var lucro = valor - (distTotal * 0.30);
+    if (document.getElementById('gorjeta').checked) lucro += valor * 0.12;
+    lastSuggestedChips = ['E o ganho por hora?', 'Vale a pena R$18 por 7km?'];
+    return 'Fazendo as contas dessa corrida: sobra limpo pra voce <b>' + formatMoney(lucro) + '</b>, ja descontando ~R$0,30/km de custo nos ' + distTotal.toFixed(1).replace('.', ',') + ' km totais. ' + (lucro > valor * 0.7 ? 'Boa margem! 👍' : 'Margem meio apertada, hein...');
+  }
+  if (tem(lower, ['tempo', 'demora', 'quanto tempo'])) {
+    var tempoReal = calcularTempoReal();
+    lastSuggestedChips = ['E o lucro?', 'Vale a pena R$18 por 7km?'];
+    return 'Com os fatores de risco ligados, essa corrida deve levar uns <b>' + Math.round(tempoReal) + ' minutos</b> no total. Conta isso na hora de aceitar, porque tempo e dinheiro. ⏱️';
+  }
+
+  // ---- meta diaria ----
+  if (tem(lower, ['meta', 'objetivo', 'falta quanto', 'progresso'])) {
+    var meta = parseFloat(document.getElementById('metaGanho').value) || 200;
+    var hoje = parseFloat(document.getElementById('ganhoHoje').value) || 0;
+    var pct = Math.round((hoje / meta) * 100);
+    var falta = meta - hoje;
+    var animo = pct >= 100 ? 'Meta batida! 🎉 Agora e so lucro em cima.' : pct >= 75 ? 'Tá quase lá, falta pouquíssimo! 💪' : pct >= 50 ? 'Passou da metade, mantém o ritmo!' : 'Ainda tem chão pela frente, mas dá tempo de virar o dia.';
+    var gh2 = ganhoHoraRealista();
+    var horasFalta = falta > 0 ? (falta / gh2).toFixed(1).replace('.', ',') : '0';
+    lastSuggestedChips = ['Plano pra semana', 'Como ta a demanda agora?'];
+    return 'Voce fez <b>' + formatMoney(hoje) + '</b> de ' + formatMoney(meta) + ' — <b>' + pct + '%</b> da meta. ' + (falta > 0 ? 'Faltam <b>' + formatMoney(falta) + '</b>, o que da umas <b>' + horasFalta + 'h</b> na tua media atual. ' : '') + animo;
+  }
+
+  // ---- historico ----
+  if (tem(lower, ['historico', 'salvos', 'quantas corridas', 'corridas salvas'])) {
+    lastSuggestedChips = ['Exportar dados', 'Plano pra fazer R$700'];
+    if (historico.length === 0) return 'Voce ainda nao salvou nenhuma corrida. Preenche os dados na aba Analisar e toca em Salvar que eu começo a montar teu historico — com ele eu consigo te dar conselhos cada vez mais certeiros.';
+    return 'Voce tem <b>' + historico.length + '</b> corridas salvas. Da uma olhada na aba Historico pra ver media de valor, melhor score e total rodado. Quanto mais voce salva, mais eu aprendo teu perfil. 📊';
+  }
+
+  // ---- dicas ----
+  if (tem(lower, ['dica', 'conselho', 'como ganhar mais', 'melhorar', 'truque', 'segredo'])) {
+    return montarDicas();
+  }
+
+  // ---- tema / exportar / voz ----
+  if (tem(lower, ['tema', 'claro', 'escuro'])) {
+    return 'Facil: toca no icone de lua/sol la em cima que o tema alterna. Eu salvo tua preferencia automaticamente. 🌙';
+  }
+  if (tem(lower, ['exportar', 'baixar dados', 'json'])) {
+    return 'Abre o menu lateral (o ☰ la em cima) e toca em Exportar Dados. Eu gero um arquivo JSON com todo teu historico. 📥';
+  }
+  if (tem(lower, ['voz', 'falar', 'microfone', 'audio'])) {
+    return 'Toca no microfone aqui do chat e fala naturalmente — eu entendo e ainda respondo em voz alta. 🎙️';
+  }
+
+  // ---- ajuda / o que sabe fazer ----
+  if (tem(lower, ['ajuda', 'help', 'o que voce sabe', 'comandos', 'o que posso perguntar', 'como funciona', 'como te usar', 'nao entendi'])) {
+    return montarAjuda();
+  }
+
+  // ---- fallback ----
+  lastSuggestedChips = ['Como ta Moema hoje?', 'Quero fazer R$700 essa semana', 'Vale a pena R$18 por 7km?'];
+  return pick([
+    'Hmm, essa eu nao peguei direito 😅<br><br>Me tenta de outro jeito? Tipo:<br>• "Como ta a demanda em Moema?"<br>• "Quais dias trabalho pra fazer R$700?"<br>• "Vale a pena uma corrida de R$18 por 7km?"',
+    'Essa me pegou! 🤔<br><br>Sou melhor falando de demanda por bairro, plano de ganhos, analise de corrida e melhores horarios. Me pergunta algo nesse estilo que eu arraso.',
+    'Nao entendi muito bem, mas quero te ajudar! 🙂<br><br>Tenta assim: me fala um bairro que eu te digo a demanda, ou me fala quanto voce quer ganhar que eu monto o plano.'
+  ]);
+}
+
+function calcularScoreAtual() {
+  var valor = parseFloat(document.getElementById('valor').value) || 0;
+  var distIda = parseFloat(document.getElementById('distIda').value) || 0;
+  var distVolta = parseFloat(document.getElementById('distVolta').value) || 0;
+  var tempoEst = parseFloat(document.getElementById('tempoEst').value) || 1;
+  var distTotal = distIda + distVolta;
+  var subida = document.getElementById('subida').checked;
+  var semaforo = document.getElementById('semaforo').checked;
+  var chuva = document.getElementById('chuva').checked;
+  var pico = document.getElementById('pico').checked;
+  var distante = document.getElementById('distante').checked;
+  var risco = document.getElementById('risco').checked;
+
+  var score = 50;
+  if (valor >= 20) score += 15;
+  else if (valor >= 15) score += 10;
+  else if (valor >= 10) score += 5;
+  if (distTotal <= 3) score += 12;
+  else if (distTotal <= 5) score += 7;
+  else if (distTotal <= 8) score += 3;
+  if (tempoEst <= 12) score += 10;
+  else if (tempoEst <= 18) score += 5;
+  if (subida) score -= 12;
+  if (semaforo) score -= 7;
+  if (chuva) score -= 15;
+  if (pico) score -= 10;
+  if (distante) score -= 8;
+  if (risco) score -= 22;
+  return Math.max(0, Math.min(100, score));
+}
+
+function calcularTempoReal() {
+  var tempoEst = parseFloat(document.getElementById('tempoEst').value) || 1;
+  var subida = document.getElementById('subida').checked;
+  var semaforo = document.getElementById('semaforo').checked;
+  var chuva = document.getElementById('chuva').checked;
+  var pico = document.getElementById('pico').checked;
+  var distante = document.getElementById('distante').checked;
+  var risco = document.getElementById('risco').checked;
+  var tempoReal = tempoEst;
+  if (subida) tempoReal += 5;
+  if (semaforo) tempoReal += 4;
+  if (chuva) tempoReal += 8;
+  if (pico) tempoReal += 6;
+  if (distante) tempoReal += 4;
+  if (risco) tempoReal += 3;
+  return tempoReal;
+}
+
+function initVoice() {
+  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    try {
+      var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.lang = 'pt-BR';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = function() {
+        isRecording = true;
+        document.getElementById('btnVoiceChat').classList.add('recording');
+        var btnRec = document.getElementById('btnVoiceRecord');
+        if (btnRec) btnRec.classList.add('recording');
+        var status = document.getElementById('voiceStatus');
+        if (status) status.textContent = 'Ouvindo... Fale agora';
+      };
+
+      recognition.onend = function() {
+        isRecording = false;
+        document.getElementById('btnVoiceChat').classList.remove('recording');
+        var btnRec = document.getElementById('btnVoiceRecord');
+        if (btnRec) btnRec.classList.remove('recording');
+        var status = document.getElementById('voiceStatus');
+        if (status) status.textContent = 'Toque para ouvir';
+      };
+
+      recognition.onresult = function(event) {
+        var transcript = event.results[0][0].transcript;
+        document.getElementById('aiChatInput').value = transcript;
+        processVoiceCommand(transcript);
+      };
+
+      recognition.onerror = function(event) {
+        isRecording = false;
+        document.getElementById('btnVoiceChat').classList.remove('recording');
+        var btnRec = document.getElementById('btnVoiceRecord');
+        if (btnRec) btnRec.classList.remove('recording');
+        var status = document.getElementById('voiceStatus');
+        if (status) status.textContent = 'Erro: ' + event.error;
+
+        var errorMsg = 'Erro no microfone';
+        if (event.error === 'not-allowed') errorMsg = 'Permissao de microfone negada. Verifique as configuracoes do navegador.';
+        else if (event.error === 'no-speech') errorMsg = 'Nao detectei fala. Tente novamente.';
+        else if (event.error === 'network') errorMsg = 'Erro de rede. Verifique sua conexao.';
+        else if (event.error === 'aborted') errorMsg = 'Gravacao cancelada.';
+        else errorMsg = 'Erro no reconhecimento: ' + event.error;
+
+        showToast(errorMsg);
+      };
+    } catch (e) {
+      recognition = null;
+      showToast('Seu navegador nao suporta reconhecimento de voz. Use Chrome ou Edge.');
+    }
+  } else {
+    recognition = null;
+  }
+}
+
+function toggleVoice() {
+  if (!recognition) {
+    showToast('Reconhecimento de voz nao suportado neste navegador. Use Chrome ou Edge.');
+    return;
+  }
+  if (isRecording) {
+    try { recognition.stop(); } catch(e) {}
+  } else {
+    try {
+      document.getElementById('aiChatInput').value = '';
+      recognition.start();
+    } catch(e) {
+      showToast('Erro ao iniciar microfone: ' + e.message);
+      isRecording = false;
+    }
+  }
+}
+
+function processVoiceCommand(cmd) {
+  var lower = cmd.toLowerCase();
+  showToast('Comando: "' + cmd + '"');
+
+  if (lower.indexOf('analisar') !== -1) { switchTab('analisar'); closeMenu(); closeVoiceModal(); }
+  else if (lower.indexOf('comparar') !== -1) { switchTab('comparar'); closeMenu(); closeVoiceModal(); }
+  else if (lower.indexOf('previsao') !== -1) { switchTab('previsao'); closeMenu(); closeVoiceModal(); }
+  else if (lower.indexOf('meta') !== -1 && lower.indexOf('diaria') !== -1) { switchTab('meta'); closeMenu(); closeVoiceModal(); }
+  else if (lower.indexOf('historico') !== -1) { switchTab('historico'); closeMenu(); closeVoiceModal(); }
+  else if (lower.indexOf('tema claro') !== -1) { document.body.classList.add('light-mode'); document.getElementById('btnTheme').innerHTML = '&#9728;'; localStorage.setItem('darkstore_theme', 'light'); showToast('Tema claro ativado'); speak('Tema claro ativado'); }
+  else if (lower.indexOf('tema escuro') !== -1) { document.body.classList.remove('light-mode'); document.getElementById('btnTheme').innerHTML = '&#127769;'; localStorage.setItem('darkstore_theme', 'dark'); showToast('Tema escuro ativado'); speak('Tema escuro ativado'); }
+  else if (lower.indexOf('limpar') !== -1) { limparForm(); speak('Formulario limpo'); }
+  else if (lower.indexOf('salvar') !== -1) { salvarCorrida(); }
+  else if (lower.indexOf('ajuda') !== -1) { showHelp(); closeVoiceModal(); speak('Abrindo ajuda'); }
+  else if (lower.indexOf('exportar') !== -1) { exportarDados(); closeVoiceModal(); }
+  else {
+    addUserMessage(cmd);
+    showTyping();
+    setTimeout(function() {
+      hideTyping();
+      var resp = generateAIResponse(cmd);
+      addAIMessage(resp);
+    }, 800);
+  }
+}
+
+function calcular() {
+  var valor = parseFloat(document.getElementById('valor').value) || 0;
+  var distIda = parseFloat(document.getElementById('distIda').value) || 0;
+  var distVolta = parseFloat(document.getElementById('distVolta').value) || 0;
+  var tempoEst = parseFloat(document.getElementById('tempoEst').value) || 1;
+  if (tempoEst < 1) tempoEst = 1;
+
+  var subida = document.getElementById('subida').checked;
+  var semaforo = document.getElementById('semaforo').checked;
+  var chuva = document.getElementById('chuva').checked;
+  var pico = document.getElementById('pico').checked;
+  var distante = document.getElementById('distante').checked;
+  var gorjeta = document.getElementById('gorjeta').checked;
+  var risco = document.getElementById('risco').checked;
+
+  var distTotal = distIda + distVolta;
+  var tempoReal = tempoEst;
+  if (subida) tempoReal += 5;
+  if (semaforo) tempoReal += 4;
+  if (chuva) tempoReal += 8;
+  if (pico) tempoReal += 6;
+  if (distante) tempoReal += 4;
+  if (risco) tempoReal += 3;
+
+  var ganhoHora = (valor / tempoReal) * 60;
+  var lucro = valor - (distTotal * 0.30);
+  if (gorjeta) lucro += valor * 0.12;
+
+  var score = 50;
+  if (valor >= 20) score += 15;
+  else if (valor >= 15) score += 10;
+  else if (valor >= 10) score += 5;
+
+  if (distTotal <= 3) score += 12;
+  else if (distTotal <= 5) score += 7;
+  else if (distTotal <= 8) score += 3;
+
+  if (tempoEst <= 12) score += 10;
+  else if (tempoEst <= 18) score += 5;
+
+  if (subida) score -= 12;
+  if (semaforo) score -= 7;
+  if (chuva) score -= 15;
+  if (pico) score -= 10;
+  if (distante) score -= 8;
+  if (risco) score -= 22;
+
+  score = Math.max(0, Math.min(100, score));
+
+  var box = document.getElementById('verdictBox');
+  var fill = document.getElementById('scoreFill');
+
+  box.className = 'verdict-card';
+  fill.style.width = score + '%';
+
+  if (score >= 70) {
+    box.classList.add('verdict-yes');
+    document.getElementById('verdictIcon').innerHTML = '&#9989;';
+    document.getElementById('verdictText').textContent = 'Vale a pena aceitar!';
+    document.getElementById('dRecomendacao').textContent = 'Aceitar';
+    document.getElementById('dRecomendacao').style.color = '#10b981';
+    fill.style.background = 'linear-gradient(90deg,#10b981,#34d399)';
+  } else if (score >= 45) {
+    box.classList.add('verdict-maybe');
+    document.getElementById('verdictIcon').innerHTML = '&#9888;';
+    document.getElementById('verdictText').textContent = 'Avalie com cuidado';
+    document.getElementById('dRecomendacao').textContent = 'Avaliar';
+    document.getElementById('dRecomendacao').style.color = '#f59e0b';
+    fill.style.background = 'linear-gradient(90deg,#f59e0b,#fbbf24)';
+  } else {
+    box.classList.add('verdict-no');
+    document.getElementById('verdictIcon').innerHTML = '&#10060;';
+    document.getElementById('verdictText').textContent = 'Nao vale a pena';
+    document.getElementById('dRecomendacao').textContent = 'Recusar';
+    document.getElementById('dRecomendacao').style.color = '#ef4444';
+    fill.style.background = 'linear-gradient(90deg,#ef4444,#f87171)';
+  }
+
+  document.getElementById('verdictSub').textContent = 'Score Neural: ' + score + '/100';
+  document.getElementById('dValor').textContent = formatMoney(valor);
+  document.getElementById('dTempo').textContent = Math.round(tempoReal) + ' min';
+  document.getElementById('dDist').textContent = distTotal.toFixed(1).replace('.',',') + ' km';
+  document.getElementById('dGanhoHora').textContent = formatMoney(ganhoHora);
+  document.getElementById('dLucro').textContent = formatMoney(lucro);
+  document.getElementById('dLucroKm').textContent = formatMoney(lucro / (distTotal || 1));
+}
+
+function calcularComparacao() {
+  var aValor = parseFloat(document.getElementById('compAValor').value) || 0;
+  var aDistIda = parseFloat(document.getElementById('compADistIda').value) || 0;
+  var aDistVolta = parseFloat(document.getElementById('compADistVolta').value) || 0;
+  var aTempo = parseFloat(document.getElementById('compATempo').value) || 1;
+  var aDistTotal = aDistIda + aDistVolta;
+  var aScore = Math.max(0, Math.min(100, 50 + (aValor >= 15 ? 10 : 5) + (aDistTotal <= 5 ? 7 : 0) - (aTempo > 20 ? 5 : 0)));
+
+  var bValor = parseFloat(document.getElementById('compBValor').value) || 0;
+  var bDistIda = parseFloat(document.getElementById('compBDistIda').value) || 0;
+  var bDistVolta = parseFloat(document.getElementById('compBDistVolta').value) || 0;
+  var bTempo = parseFloat(document.getElementById('compBTempo').value) || 1;
+  var bDistTotal = bDistIda + bDistVolta;
+  var bScore = Math.max(0, Math.min(100, 50 + (bValor >= 15 ? 10 : 5) + (bDistTotal <= 5 ? 7 : 0) - (bTempo > 20 ? 5 : 0)));
+
+  document.getElementById('compValor1').textContent = formatMoney(aValor);
+  document.getElementById('compDetalhes1').textContent = aDistTotal.toFixed(1).replace('.',',') + ' km . ' + aTempo + ' min';
+  document.getElementById('compScore1').textContent = aScore;
+  document.getElementById('compValor2').textContent = formatMoney(bValor);
+  document.getElementById('compDetalhes2').textContent = bDistTotal.toFixed(1).replace('.',',') + ' km . ' + bTempo + ' min';
+  document.getElementById('compScore2').textContent = bScore;
+
+  var diff = Math.abs(bScore - aScore);
+  if (bScore > aScore) {
+    document.getElementById('compWinner').innerHTML = '<span style="color:#a855f7;">Corrida B</span> e a melhor escolha! (+' + diff + ' pontos)';
+  } else if (aScore > bScore) {
+    document.getElementById('compWinner').innerHTML = '<span style="color:#a855f7;">Corrida A</span> e a melhor escolha! (+' + diff + ' pontos)';
+  } else {
+    document.getElementById('compWinner').innerHTML = '<span style="color:#a0a0b8;">Empate!</span> Ambas tem o mesmo score.';
+  }
+}
+
+function atualizarMeta() {
+  var meta = parseFloat(document.getElementById('metaGanho').value) || 200;
+  var hoje = parseFloat(document.getElementById('ganhoHoje').value) || 0;
+  var pct = Math.min(100, Math.round((hoje / meta) * 100));
+  document.getElementById('goalPct').textContent = pct + '%';
+  document.getElementById('metaGanhoHoje').textContent = formatMoney(hoje) + ' / ' + formatMoney(meta);
+  document.getElementById('goalBar').style.width = pct + '%';
+  if (pct >= 80) document.getElementById('goalBar').style.background = 'linear-gradient(90deg,#10b981,#34d399)';
+  else if (pct >= 50) document.getElementById('goalBar').style.background = 'linear-gradient(90deg,#f59e0b,#fbbf24)';
+  else document.getElementById('goalBar').style.background = 'linear-gradient(90deg,#ef4444,#f87171)';
+}
+
+function gerarDemandaChart() {
+  var chart = document.getElementById('demandaChart');
+  var dados = [30, 65, 45, 55, 80, 95, 70, 40, 25, 35, 60, 85, 90, 75, 50, 30, 20, 45, 70, 85, 95, 80, 50, 25];
+  var max = Math.max.apply(null, dados);
+  var html = '';
+  for (var i = 0; i < dados.length; i++) {
+    var h = (dados[i] / max) * 100;
+    var color = dados[i] >= 80 ? '#10b981' : dados[i] >= 50 ? '#6366f1' : '#f59e0b';
+    html += '<div style="flex:1;background:' + color + ';border-radius:4px 4px 0 0;height:' + h + '%;opacity:0.8;transition:opacity 0.3s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.8" title="' + (i) + 'h: ' + dados[i] + '% demanda"></div>';
+  }
+  chart.innerHTML = html;
+}
+
+function presetCorrida(tipo) {
+  var presets = {
+    curta: { valor: 10, distIda: 2, distVolta: 2, tempoEst: 12 },
+    media: { valor: 15, distIda: 3.5, distVolta: 3.5, tempoEst: 20 },
+    longa: { valor: 25, distIda: 5, distVolta: 5, tempoEst: 30 },
+    pico: { valor: 14, distIda: 3, distVolta: 3, tempoEst: 22 },
+    chuva: { valor: 16, distIda: 3, distVolta: 3, tempoEst: 25 },
+    premium: { valor: 35, distIda: 4, distVolta: 4, tempoEst: 28 }
+  };
+  var p = presets[tipo];
+  if (!p) return;
+
+  document.getElementById('valor').value = p.valor;
+  document.getElementById('distIda').value = p.distIda;
+  document.getElementById('distVolta').value = p.distVolta;
+  document.getElementById('tempoEst').value = p.tempoEst;
+
+  var btns = document.querySelectorAll('.quick-action-btn');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList.remove('active');
+    if (btns[i].getAttribute('data-preset') === tipo) {
+      btns[i].classList.add('active');
+    }
+  }
+
+  calcular();
+  showToast('Preset "' + tipo + '" aplicado!');
+}
+
+function salvarCorrida() {
+  var valor = parseFloat(document.getElementById('valor').value) || 0;
+  if (valor <= 0) { showToast('Preencha o valor!'); return; }
+
+  var distIda = parseFloat(document.getElementById('distIda').value) || 0;
+  var distVolta = parseFloat(document.getElementById('distVolta').value) || 0;
+  var tempoEst = parseFloat(document.getElementById('tempoEst').value) || 0;
+  var score = calcularScoreAtual();
+
+  historico.push({
+    valor: valor,
+    distTotal: distIda + distVolta,
+    tempo: tempoEst,
+    score: score,
+    data: new Date().toLocaleString('pt-BR')
+  });
+
+  showToast('Corrida salva! Score: ' + score);
+  speak('Corrida salva com score ' + score);
+  atualizarHistorico();
+}
+
+function limparForm() {
+  document.getElementById('valor').value = '';
+  document.getElementById('distIda').value = '';
+  document.getElementById('distVolta').value = '';
+  document.getElementById('tempoEst').value = '';
+
+  var checks = document.querySelectorAll('#panel-analisar input[type="checkbox"]');
+  for (var i = 0; i < checks.length; i++) {
+    checks[i].checked = false;
+  }
+
+  var btns = document.querySelectorAll('.quick-action-btn');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList.remove('active');
+  }
+
+  calcular();
+  showToast('Formulario limpo!');
+}
+
+function atualizarHistorico() {
+  var container = document.getElementById('historyContainer');
+  var statsCard = document.getElementById('statsCard');
+  if (historico.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:#6e6e8a;"><div style="font-size:40px;margin-bottom:8px;opacity:0.5;">&#128203;</div><div>Nenhuma corrida salva ainda.</div></div>';
+    statsCard.style.display = 'none';
+    return;
+  }
+
+  statsCard.style.display = 'block';
+  var totalValor = 0, totalDist = 0, totalScore = 0, melhorScore = 0, piorScore = 100;
+  var html = '<table style="width:100%;border-collapse:collapse;font-size:13px;">';
+  html += '<thead><tr style="border-bottom:1px solid #2a2a3a;"><th style="text-align:left;padding:12px 6px;color:#6e6e8a;font-size:10px;text-transform:uppercase;">Data</th><th style="text-align:left;padding:12px 6px;color:#6e6e8a;font-size:10px;text-transform:uppercase;">Valor</th><th style="text-align:left;padding:12px 6px;color:#6e6e8a;font-size:10px;text-transform:uppercase;">Score</th></tr></thead><tbody>';
+
+  for (var i = 0; i < historico.length; i++) {
+    var h = historico[i];
+    totalValor += h.valor;
+    totalDist += h.distTotal;
+    totalScore += h.score;
+    if (h.score > melhorScore) melhorScore = h.score;
+    if (h.score < piorScore) piorScore = h.score;
+    var scoreColor = h.score >= 70 ? '#10b981' : h.score >= 45 ? '#f59e0b' : '#ef4444';
+    html += '<tr style="border-bottom:1px solid #2a2a3a;">';
+    html += '<td style="padding:12px 6px;color:#a0a0b8;">' + h.data + '</td>';
+    html += '<td style="padding:12px 6px;color:#10b981;font-weight:700;">' + formatMoney(h.valor) + '</td>';
+    html += '<td style="padding:12px 6px;color:' + scoreColor + ';font-weight:700;">' + h.score + '</td>';
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  container.innerHTML = html;
+
+  var avgScore = Math.round(totalScore / historico.length);
+  var avgValor = totalValor / historico.length;
+  document.getElementById('statsContent').innerHTML = 
+    '<div class="detail-row"><span>Total corridas</span><span class="detail-val">' + historico.length + '</span></div>' +
+    '<div class="detail-row"><span>Valor total</span><span class="detail-val">' + formatMoney(totalValor) + '</span></div>' +
+    '<div class="detail-row"><span>Distancia total</span><span class="detail-val">' + totalDist.toFixed(1).replace('.',',') + ' km</span></div>' +
+    '<div class="detail-row"><span>Media score</span><span class="detail-val">' + avgScore + '/100</span></div>' +
+    '<div class="detail-row"><span>Media valor</span><span class="detail-val">' + formatMoney(avgValor) + '</span></div>' +
+    '<div class="detail-row"><span>Melhor score</span><span class="detail-val" style="color:#10b981;">' + melhorScore + '</span></div>' +
+    '<div class="detail-row"><span>Pior score</span><span class="detail-val" style="color:#ef4444;">' + piorScore + '</span></div>';
+}
+
+function exportarDados() {
+  if (historico.length === 0) {
+    showToast('Nenhum dado para exportar!');
+    return;
+  }
+  var data = {
+    app: 'DarkStore AI Ultra',
+    version: '3.0',
+    exportDate: new Date().toISOString(),
+    corridas: historico
+  };
+  var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'darkstore_historico_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Dados exportados!');
+  speak('Dados exportados com sucesso');
+}
+
+function gerarPrevisao() {
+  var hora = new Date().getHours();
+  var demandas = ['Baixa', 'Moderada', 'Alta', 'Muito Alta', 'Crescendo', 'Diminuindo'];
+  var proximas = ['Crescendo', 'Estavel', 'Diminuindo', 'Alta', 'Moderada'];
+  var melhores = ['12h', '13h', '19h', '20h', '12h', '19h', '20h', '21h', '19h', '20h', '21h', '22h', '12h', '13h', '19h', '20h', '19h', '20h', '21h', '19h', '20h', '21h', '22h', '23h'];
+
+  document.getElementById('predHoraAtual').textContent = demandas[hora % demandas.length];
+  document.getElementById('predProximaHora').textContent = proximas[hora % proximas.length];
+  document.getElementById('predMelhorHora').textContent = melhores[hora] || '19h';
+
+  var temps = [22, 23, 24, 25, 26, 27, 26, 25, 24, 23, 22, 21];
+  var conds = ['Ensolarado', 'Parcialmente nublado', 'Nublado', 'Chuva leve'];
+  var trafs = ['Leve', 'Moderado', 'Intenso', 'Congestionado'];
+  var chuvas = ['5%', '10%', '15%', '25%', '40%', '60%', '80%'];
+
+  document.getElementById('climaTemp').textContent = temps[hora % temps.length] + 'C';
+  document.getElementById('climaCond').textContent = conds[hora % conds.length];
+  document.getElementById('climaTrafego').textContent = trafs[hora % trafs.length];
+  document.getElementById('climaChuva').textContent = chuvas[hora % chuvas.length];
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('btnTheme').addEventListener('click', toggleTheme);
+  document.getElementById('btnNotif').addEventListener('click', toggleNotifications);
+  document.getElementById('btnMenu').addEventListener('click', openMenu);
+
+  document.getElementById('menuOverlay').addEventListener('click', closeMenu);
+  document.getElementById('btnCloseMenu').addEventListener('click', closeMenu);
+
+  var menuItems = document.querySelectorAll('.menu-item[data-tab]');
+  for (var i = 0; i < menuItems.length; i++) {
+    menuItems[i].addEventListener('click', function() {
+      switchTab(this.getAttribute('data-tab'));
+      closeMenu();
+    });
+  }
+
+  document.getElementById('menuHelp').addEventListener('click', function() {
+    showHelp();
+    closeMenu();
+  });
+  document.getElementById('menuVoice').addEventListener('click', function() {
+    showVoiceModal();
+    closeMenu();
+  });
+  document.getElementById('menuExport').addEventListener('click', function() {
+    exportarDados();
+    closeMenu();
+  });
+  document.getElementById('btnCloseHelp').addEventListener('click', closeHelp);
+  document.getElementById('btnEntendi').addEventListener('click', closeHelp);
+
+  document.getElementById('btnCloseVoice').addEventListener('click', closeVoiceModal);
+  document.getElementById('btnFecharVoice').addEventListener('click', closeVoiceModal);
+
+  document.getElementById('aiChatFab').addEventListener('click', toggleChat);
+  document.getElementById('btnCloseChat').addEventListener('click', toggleChat);
+  document.getElementById('btnSendChat').addEventListener('click', sendChatMessage);
+  document.getElementById('aiChatInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') sendChatMessage();
+  });
+
+  document.getElementById('btnVoiceChat').addEventListener('click', toggleVoice);
+  document.getElementById('btnVoiceRecord').addEventListener('click', toggleVoice);
+
+  var presetBtns = document.querySelectorAll('.quick-action-btn');
+  for (var i = 0; i < presetBtns.length; i++) {
+    presetBtns[i].addEventListener('click', function() {
+      presetCorrida(this.getAttribute('data-preset'));
+    });
+  }
+
+  document.getElementById('btnSalvar').addEventListener('click', salvarCorrida);
+  document.getElementById('btnLimpar').addEventListener('click', limparForm);
+
+  var formInputs = ['valor', 'distIda', 'distVolta', 'tempoEst'];
+  for (var i = 0; i < formInputs.length; i++) {
+    document.getElementById(formInputs[i]).addEventListener('input', calcular);
+  }
+
+  var checkIds = ['subida', 'semaforo', 'chuva', 'pico', 'distante', 'gorjeta', 'risco'];
+  for (var i = 0; i < checkIds.length; i++) {
+    document.getElementById(checkIds[i]).addEventListener('change', calcular);
+  }
+
+  var compInputs = ['compAValor', 'compADistIda', 'compADistVolta', 'compATempo', 'compBValor', 'compBDistIda', 'compBDistVolta', 'compBTempo'];
+  for (var i = 0; i < compInputs.length; i++) {
+    document.getElementById(compInputs[i]).addEventListener('input', calcularComparacao);
+  }
+
+  var metaInputs = ['metaGanho', 'metaEntregas', 'ganhoHoje', 'entregasHoje'];
+  for (var i = 0; i < metaInputs.length; i++) {
+    document.getElementById(metaInputs[i]).addEventListener('input', atualizarMeta);
+  }
+
+  if (synth && synth.onvoiceschanged !== undefined) {
+    synth.onvoiceschanged = function() {};
+  }
+
+  loadTheme();
+  calcular();
+  calcularComparacao();
+  atualizarMeta();
+  gerarDemandaChart();
+  gerarPrevisao();
+  initVoice();
+  renderChips(['Como ta a demanda em Moema?', 'Quero fazer R$700 essa semana', 'Vale a pena R$18 por 7km?']);
+
+  setTimeout(function() {
+    showToast('DarkStore AI Ultra v4.0 - Pronto!');
+    speak('DarkStore AI Ultra pronto. Como posso ajudar?');
+  }, 500);
+});
+</script>
+</body>
+</html>
